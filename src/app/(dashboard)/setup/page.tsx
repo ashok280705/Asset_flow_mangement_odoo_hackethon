@@ -2,13 +2,16 @@
 import { useEffect, useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { Badge } from '@/components/ui/Badge'
-import { Building2, Tag, Users, Plus } from 'lucide-react'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { usePermissions } from '@/components/SessionProvider'
+import { Building2, Tag, Users, Plus, Lock } from 'lucide-react'
 
 interface Department { id: string; name: string; code: string; status: string; _count: { users: number; assets: number } }
 interface Category { id: string; name: string; description?: string; warrantyPeriod?: number; _count: { assets: number } }
 interface Employee { id: string; name: string; email: string; role: string; status: string; department?: { name: string } }
 
 export default function SetupPage() {
+  const { isAdmin } = usePermissions()
   const [tab, setTab] = useState<'departments' | 'categories' | 'employees'>('departments')
   const [departments, setDepartments] = useState<Department[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -95,6 +98,20 @@ export default function SetupPage() {
     { key: 'categories', label: 'Categories', icon: Tag },
     { key: 'employees', label: 'Employees', icon: Users },
   ] as const
+
+  if (!isAdmin) {
+    return (
+      <div className="af-fade-in">
+        <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl">
+          <EmptyState
+            icon={Lock}
+            title="Admin access required"
+            description="Organization setup — departments, categories and role assignment — is managed by administrators only."
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6 af-fade-in">
