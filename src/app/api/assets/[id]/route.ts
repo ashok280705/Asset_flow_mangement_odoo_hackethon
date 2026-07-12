@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
+import { assetScope } from '@/lib/rbac'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = await getSession()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { id } = await params
-  const asset = await prisma.asset.findUnique({
-    where: { id },
+  const asset = await prisma.asset.findFirst({
+    where: { AND: [{ id }, assetScope(user)] },
     include: {
       category: true,
       department: true,

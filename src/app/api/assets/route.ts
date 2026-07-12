@@ -3,6 +3,9 @@ import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { assetSchema } from '@/lib/validations'
 import { generateAssetTag } from '@/lib/utils'
+import { assetScope } from '@/lib/rbac'
+import { logActivity } from '@/lib/events'
+import type { Prisma } from '@prisma/client'
 
 export async function GET(req: NextRequest) {
   const user = await getSession()
@@ -16,17 +19,23 @@ export async function GET(req: NextRequest) {
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
 
-  const where: Record<string, unknown> = {}
+  // Role scope first (employee → own; dept head → their dept; managers → all),
+  // then layer the requested filters on top with AND so a filter can never
+  // widen what the user is allowed to see.
+  const filters: Prisma.AssetWhereInput[] = [assetScope(user)]
   if (search) {
-    where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { assetTag: { contains: search, mode: 'insensitive' } },
-      { serialNumber: { contains: search, mode: 'insensitive' } },
-    ]
+    filters.push({
+      OR: [
+        { name: { contains: search } },
+        { assetTag: { contains: search } },
+        { serialNumber: { contains: search } },
+      ],
+    })
   }
-  if (status) where.status = status
-  if (categoryId) where.categoryId = categoryId
-  if (departmentId) where.departmentId = departmentId
+  if (status) filters.push({ status: status as Prisma.AssetWhereInput['status'] })
+  if (categoryId) filters.push({ categoryId })
+  if (departmentId) filters.push({ departmentId })
+  const where: Prisma.AssetWhereInput = { AND: filters }
 
   const [assets, total] = await Promise.all([
     prisma.asset.findMany({
@@ -75,15 +84,7 @@ export async function POST(req: NextRequest) {
     }
   })
 
-  await prisma.activityLog.create({
-    data: {
-      userId: user.id,
-      action: 'CREATED',
-      entity: 'Asset',
-      entityId: asset.id,
-      details: `Asset ${assetTag} registered`,
-    }
-  })
+  await logActivity(user.id, 'CREATED', 'Asset', asset.id, `Asset ${assetTag} registered`)
 
   return NextResponse.json({ asset }, { status: 201 })
 }
