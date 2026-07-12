@@ -50,6 +50,7 @@
   --shadow-sm: 0 1px 3px rgba(28, 27, 24, 0.06), 0 1px 2px rgba(28, 27, 24, 0.04);
   --shadow-md: 0 4px 12px -2px rgba(28, 27, 24, 0.08), 0 2px 6px -2px rgba(28, 27, 24, 0.05);
   --shadow-lg: 0 12px 32px -8px rgba(28, 27, 24, 0.14), 0 4px 12px -4px rgba(28, 27, 24, 0.08);
+  --shadow-xl: 0 24px 60px -12px rgba(28, 27, 24, 0.22), 0 8px 24px -8px rgba(28, 27, 24, 0.12);
 }
 
 * {
@@ -159,9 +160,124 @@ h1, h2, h3, h4 {
   border-radius: 8px;
 }
 
+/* ============================================================
+   Bento widgets — cohesive premium surface language
+   ============================================================ */
+
+.af-widget {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.24s ease;
+  overflow: hidden;
+}
+.af-widget:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+.af-widget--interactive:hover {
+  transform: translateY(-2px);
+}
+/* whisper-thin top sheen for depth */
+.af-widget::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  pointer-events: none;
+}
+
+/* subtle glass — used for overlays / command palette */
+.af-glass {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(1.4) blur(20px);
+  -webkit-backdrop-filter: saturate(1.4) blur(20px);
+}
+
+/* dropdown / context menus */
+.af-menu {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  padding: 5px;
+}
+.af-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: background 0.14s ease, color 0.14s ease;
+  cursor: pointer;
+  text-align: left;
+}
+.af-menu-item:hover { background: var(--surface-inset); color: var(--text); }
+.af-menu-item--danger:hover { background: var(--rose-soft); color: var(--rose); }
+
+/* tabular figures for counters/metrics — no width jitter while animating */
+.af-num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
+
+/* focus ring helper for keyboard nav */
+.af-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent-ring);
+}
+
+/* ============================================================
+   Additional motion primitives
+   ============================================================ */
+
+@keyframes af-menu-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes af-slide-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes af-pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+@keyframes af-draw-ring {
+  from { stroke-dashoffset: var(--dash-from, 999); }
+  to   { stroke-dashoffset: var(--dash-to, 0); }
+}
+
+.af-menu-in { animation: af-menu-in 0.16s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.af-slide-up { animation: af-slide-up 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.af-pulse-soft { animation: af-pulse-soft 1.8s ease-in-out infinite; }
+.af-ring-draw { animation: af-draw-ring 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* live dot */
+.af-livedot { position: relative; }
+.af-livedot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 0 var(--accent-ring);
+  animation: af-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes af-ping {
+  75%, 100% { box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .af-fade-in, .af-fade, .af-scale-in, .af-stagger > *, .af-skeleton {
+  .af-fade-in, .af-fade, .af-scale-in, .af-stagger > *, .af-skeleton,
+  .af-menu-in, .af-slide-up, .af-pulse-soft, .af-ring-draw, .af-livedot::after {
     animation: none !important;
   }
-  .af-hover-lift { transition: none; }
+  .af-hover-lift, .af-widget, .af-widget--interactive { transition: none; }
+  .af-widget--interactive:hover { transform: none; }
 }

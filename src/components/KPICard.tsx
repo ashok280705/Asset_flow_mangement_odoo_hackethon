@@ -1,5 +1,7 @@
 import { cn } from '@/lib/utils'
-import { LucideIcon } from 'lucide-react'
+import { LucideIcon, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
+import { WidgetMenu, type WidgetMenuItem } from '@/components/ui/WidgetMenu'
 
 interface KPICardProps {
   title: string
@@ -8,10 +10,11 @@ interface KPICardProps {
   icon: LucideIcon
   iconColor?: string
   trend?: { value: number; label: string }
+  menu?: WidgetMenuItem[]
   className?: string
 }
 
-// Maps the old dark icon-color tokens (still passed by pages) to a
+// Maps the legacy dark icon-color tokens (still passed by pages) to a
 // premium light "tinted chip" treatment so callers need no changes.
 function iconChip(iconColor?: string): string {
   const map: Record<string, string> = {
@@ -33,33 +36,45 @@ export function KPICard({
   icon: Icon,
   iconColor,
   trend,
+  menu,
   className,
 }: KPICardProps) {
+  const isNumber = typeof value === 'number'
+  const up = trend ? trend.value >= 0 : true
+
   return (
     <div
-      className={cn(
-        'bg-white border border-[#e9e7e1] rounded-2xl shadow-soft af-hover-lift p-5 flex flex-col gap-4',
-        className
-      )}
+      className={cn('af-widget af-widget--interactive p-5 flex flex-col gap-4', className)}
     >
       <div className="flex items-center justify-between">
         <span className="text-[13px] font-medium text-[#8c8a80]">{title}</span>
-        <div className={cn('p-2 rounded-[10px]', iconChip(iconColor))}>
-          <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+        <div className="flex items-center gap-1">
+          <div className={cn('grid place-items-center h-9 w-9 rounded-[12px]', iconChip(iconColor))}>
+            <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+          </div>
+          {menu && menu.length > 0 && <WidgetMenu items={menu} className="-mr-1" />}
         </div>
       </div>
+
       <div>
-        <div className="text-[28px] leading-none font-semibold text-[#1c1b18] tracking-tight">{value}</div>
-        {subtitle && <div className="text-[13px] text-[#8c8a80] mt-1.5">{subtitle}</div>}
+        <div className="text-[30px] leading-none font-semibold text-[#1c1b18] tracking-tight af-num">
+          {isNumber ? <AnimatedCounter value={value as number} /> : value}
+        </div>
+        {subtitle && <div className="text-[13px] text-[#8c8a80] mt-2">{subtitle}</div>}
       </div>
+
       {trend && (
-        <div
-          className={cn(
-            'text-xs font-medium',
-            trend.value >= 0 ? 'text-emerald-600' : 'text-rose-600'
-          )}
-        >
-          {trend.value >= 0 ? '↑' : '↓'} {Math.abs(trend.value)}% {trend.label}
+        <div className="flex items-center gap-1.5">
+          <span
+            className={cn(
+              'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[11.5px] font-semibold',
+              up ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'
+            )}
+          >
+            {up ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
+            {Math.abs(trend.value)}%
+          </span>
+          <span className="text-[12px] text-[#8c8a80]">{trend.label}</span>
         </div>
       )}
     </div>
