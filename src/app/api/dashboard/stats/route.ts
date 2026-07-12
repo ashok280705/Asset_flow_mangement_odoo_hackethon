@@ -19,6 +19,7 @@ export async function GET() {
 
   const now = new Date()
   const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
   const and = (base: Prisma.AssetWhereInput, extra: Prisma.AssetWhereInput) => ({ AND: [base, extra] })
 
@@ -30,6 +31,7 @@ export async function GET() {
     activeAllocations,
     overdueAllocations,
     pendingMaintenance,
+    maintenanceToday,
     upcomingBookings,
     pendingTransfers,
     upcomingReturns,
@@ -43,6 +45,7 @@ export async function GET() {
     prisma.allocation.count({ where: { AND: [alScope, { status: 'ACTIVE' }] } }),
     prisma.allocation.count({ where: { AND: [alScope, { status: 'ACTIVE', expectedReturn: { lt: now } }] } }),
     prisma.maintenanceRequest.count({ where: { AND: [mScope, { status: 'PENDING' }] } }),
+    prisma.maintenanceRequest.count({ where: { AND: [mScope, { createdAt: { gte: startOfToday } }] } }),
     prisma.booking.count({ where: { AND: [bScope, { status: 'UPCOMING' }] } }),
     prisma.transferRequest.count({ where: { AND: [tScope, { status: 'PENDING' }] } }),
     prisma.allocation.count({ where: { AND: [alScope, { status: 'ACTIVE', expectedReturn: { gte: now, lte: in7Days } }] } }),
@@ -87,6 +90,7 @@ export async function GET() {
       activeAllocations,
       overdueAllocations,
       pendingMaintenance,
+      maintenanceToday,
       upcomingBookings,
       pendingTransfers,
       upcomingReturns,

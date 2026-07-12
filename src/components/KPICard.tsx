@@ -15,18 +15,19 @@ interface KPICardProps {
 }
 
 // Maps the legacy dark icon-color tokens (still passed by pages) to a
-// premium light "tinted chip" treatment so callers need no changes.
-function iconChip(iconColor?: string): string {
-  const map: Record<string, string> = {
-    'text-amber-400': 'bg-amber-50 text-amber-600',
-    'text-emerald-400': 'bg-emerald-50 text-emerald-600',
-    'text-blue-400': 'bg-teal-50 text-teal-600',
-    'text-orange-400': 'bg-orange-50 text-orange-600',
-    'text-red-400': 'bg-rose-50 text-rose-600',
-    'text-purple-400': 'bg-violet-50 text-violet-600',
-    'text-slate-400': 'bg-stone-100 text-stone-500',
-  }
-  return map[iconColor || ''] || 'bg-emerald-50 text-emerald-600'
+// premium light treatment — a tinted icon chip plus a matching accent strip
+// so a row of KPI cards reads as a colourful, differentiated set (not all green).
+const TONE_MAP: Record<string, { chip: string; strip: string; dot: string }> = {
+  'text-amber-400': { chip: 'bg-amber-50 text-amber-600', strip: 'bg-amber-400/70', dot: 'bg-amber-400' },
+  'text-emerald-400': { chip: 'bg-emerald-50 text-emerald-600', strip: 'bg-emerald-400/70', dot: 'bg-emerald-400' },
+  'text-blue-400': { chip: 'bg-teal-50 text-teal-600', strip: 'bg-teal-400/70', dot: 'bg-teal-400' },
+  'text-orange-400': { chip: 'bg-orange-50 text-orange-600', strip: 'bg-orange-400/70', dot: 'bg-orange-400' },
+  'text-red-400': { chip: 'bg-rose-50 text-rose-600', strip: 'bg-rose-400/70', dot: 'bg-rose-400' },
+  'text-purple-400': { chip: 'bg-violet-50 text-violet-600', strip: 'bg-violet-400/70', dot: 'bg-violet-400' },
+  'text-slate-400': { chip: 'bg-stone-100 text-stone-500', strip: 'bg-stone-300', dot: 'bg-stone-400' },
+}
+function tone(iconColor?: string) {
+  return TONE_MAP[iconColor || ''] || TONE_MAP['text-emerald-400']
 }
 
 export function KPICard({
@@ -41,15 +42,18 @@ export function KPICard({
 }: KPICardProps) {
   const isNumber = typeof value === 'number'
   const up = trend ? trend.value >= 0 : true
+  const t = tone(iconColor)
 
   return (
     <div
-      className={cn('af-widget af-widget--interactive p-5 flex flex-col gap-4', className)}
+      className={cn('af-widget af-widget--interactive p-5 pt-[18px] flex flex-col gap-4', className)}
     >
+      {/* colored accent strip so each KPI reads distinctly */}
+      <span className={cn('absolute top-0 left-5 right-5 h-[3px] rounded-b-full', t.strip)} aria-hidden />
       <div className="flex items-center justify-between">
         <span className="text-[13px] font-medium text-[#8c8a80]">{title}</span>
         <div className="flex items-center gap-1">
-          <div className={cn('grid place-items-center h-9 w-9 rounded-[12px]', iconChip(iconColor))}>
+          <div className={cn('grid place-items-center h-9 w-9 rounded-[12px]', t.chip)}>
             <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
           </div>
           {menu && menu.length > 0 && <WidgetMenu items={menu} className="-mr-1" />}

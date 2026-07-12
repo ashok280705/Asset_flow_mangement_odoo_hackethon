@@ -53,7 +53,10 @@ interface StatsData {
     activeAllocations: number
     overdueAllocations: number
     pendingMaintenance: number
+    maintenanceToday: number
     upcomingBookings: number
+    pendingTransfers: number
+    upcomingReturns: number
   }
   charts: {
     byCategory: { name: string; value: number }[]
@@ -344,12 +347,12 @@ export default function DashboardPage() {
         </Widget>
       </div>
 
-      {/* Operational stat tiles */}
+      {/* Operational stat tiles — the PDF's KPI set (overdue is highlighted separately below) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <MiniStat label="Active Allocations" value={s?.activeAllocations ?? 0} icon={TrendingUp} tone="emerald" href="/allocations" />
-        <MiniStat label="Overdue Returns" value={s?.overdueAllocations ?? 0} icon={AlertTriangle} tone="rose" href="/allocations" />
-        <MiniStat label="Pending Maintenance" value={s?.pendingMaintenance ?? 0} icon={ClipboardList} tone="orange" href="/maintenance" />
-        <MiniStat label="Upcoming Bookings" value={s?.upcomingBookings ?? 0} icon={Calendar} tone="violet" href="/bookings" />
+        <MiniStat label="Maintenance Today" value={s?.maintenanceToday ?? 0} icon={Wrench} tone="orange" href="/maintenance" />
+        <MiniStat label="Active Bookings" value={s?.upcomingBookings ?? 0} icon={Calendar} tone="teal" href="/bookings" />
+        <MiniStat label="Pending Transfers" value={s?.pendingTransfers ?? 0} icon={RefreshCw} tone="violet" href="/allocations" />
+        <MiniStat label="Upcoming Returns" value={s?.upcomingReturns ?? 0} icon={TrendingUp} tone="amber" href="/allocations" />
       </div>
 
       {/* Bento row 2 — distributions */}
@@ -534,17 +537,20 @@ function UtilRow({ label, value, dot }: { label: string; value: number | string;
 function MiniStat({
   label, value, icon: Icon, tone, href,
 }: {
-  label: string; value: number; icon: typeof Package; tone: 'emerald' | 'rose' | 'orange' | 'violet'; href: string
+  label: string; value: number; icon: typeof Package; tone: 'emerald' | 'rose' | 'orange' | 'violet' | 'teal' | 'amber'; href: string
 }) {
-  const tones: Record<string, string> = {
-    emerald: 'bg-emerald-50 text-emerald-600',
-    rose: 'bg-rose-50 text-rose-600',
-    orange: 'bg-orange-50 text-orange-600',
-    violet: 'bg-violet-50 text-violet-600',
+  const tones: Record<string, { chip: string; strip: string }> = {
+    emerald: { chip: 'bg-emerald-50 text-emerald-600', strip: 'bg-emerald-400/70' },
+    rose: { chip: 'bg-rose-50 text-rose-600', strip: 'bg-rose-400/70' },
+    orange: { chip: 'bg-orange-50 text-orange-600', strip: 'bg-orange-400/70' },
+    violet: { chip: 'bg-violet-50 text-violet-600', strip: 'bg-violet-400/70' },
+    teal: { chip: 'bg-teal-50 text-teal-600', strip: 'bg-teal-400/70' },
+    amber: { chip: 'bg-amber-50 text-amber-600', strip: 'bg-amber-400/70' },
   }
   return (
     <Link href={href} className="af-widget af-widget--interactive p-4 flex items-center gap-3.5">
-      <span className={cn('grid place-items-center h-11 w-11 rounded-[13px] shrink-0', tones[tone])}>
+      <span className={cn('absolute top-0 left-4 right-4 h-[3px] rounded-b-full', tones[tone].strip)} aria-hidden />
+      <span className={cn('grid place-items-center h-11 w-11 rounded-[13px] shrink-0', tones[tone].chip)}>
         <Icon className="h-5 w-5" strokeWidth={2} />
       </span>
       <div className="min-w-0">
