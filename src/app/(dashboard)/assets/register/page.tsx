@@ -24,6 +24,7 @@ export default function RegisterAssetPage() {
     location: '',
     departmentId: '',
     isBookable: false,
+    photoUrl: '',
     notes: '',
   })
 
@@ -136,6 +137,10 @@ export default function RegisterAssetPage() {
               <option value="">No department</option>
               {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelCls}>Photo / Document URL</label>
+            <input name="photoUrl" value={form.photoUrl} onChange={handleChange} placeholder="https://…/asset-photo.jpg" className={inputCls} />
           </div>
           <div className="sm:col-span-2">
             <label className={labelCls}>Notes</label>

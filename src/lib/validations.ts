@@ -21,6 +21,7 @@ export const assetSchema = z.object({
   location: z.string().optional(),
   departmentId: z.string().optional(),
   isBookable: z.boolean().default(false),
+  photoUrl: z.string().url('Enter a valid image URL').optional().or(z.literal('')),
   notes: z.string().optional(),
 })
 

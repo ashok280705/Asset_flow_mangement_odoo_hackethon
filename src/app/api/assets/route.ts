@@ -81,6 +81,7 @@ export async function POST(req: NextRequest) {
       acquisitionDate: new Date(parsed.data.acquisitionDate),
       acquisitionCost: parsed.data.acquisitionCost ?? null,
       departmentId: parsed.data.departmentId || null,
+      photoUrl: parsed.data.photoUrl || null,
     }
   })
 
