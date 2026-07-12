@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { bookingSchema } from '@/lib/validations'
+import { bookingScope } from '@/lib/rbac'
+import { logActivity, notify } from '@/lib/events'
+import type { Prisma } from '@prisma/client'
 
 export async function GET(req: NextRequest) {
   const user = await getSession()
@@ -9,13 +12,15 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url)
   const status = searchParams.get('status') || ''
+  const assetId = searchParams.get('assetId') || ''
 
-  const where: Record<string, unknown> = {}
-  if (status) where.status = status
-  if (user.role === 'EMPLOYEE') where.userId = user.id
+  // Scope by role, but always expose an asset's own bookings when a specific
+  // resource is requested — the calendar/overlap view needs the full picture.
+  const filters: Prisma.BookingWhereInput[] = assetId ? [{ assetId }] : [bookingScope(user)]
+  if (status) filters.push({ status: status as Prisma.BookingWhereInput['status'] })
 
   const bookings = await prisma.booking.findMany({
-    where,
+    where: { AND: filters },
     include: {
       asset: { select: { name: true, assetTag: true } },
       user: { select: { name: true, email: true } }
@@ -70,6 +75,14 @@ export async function POST(req: NextRequest) {
       purpose: parsed.data.purpose,
     }
   })
+
+  await logActivity(user.id, 'BOOKED', 'Asset', asset.id, `${asset.assetTag} booked`)
+  await notify(
+    user.id,
+    'Booking confirmed',
+    `Your booking for ${asset.name} (${asset.assetTag}) is confirmed.`,
+    'BOOKING'
+  )
 
   return NextResponse.json({ booking }, { status: 201 })
 }
