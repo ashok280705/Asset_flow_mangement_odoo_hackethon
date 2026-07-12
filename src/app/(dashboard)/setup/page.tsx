@@ -1,0 +1,290 @@
+'use client'
+import { useEffect, useState } from 'react'
+import { Modal } from '@/components/ui/Modal'
+import { Badge } from '@/components/ui/Badge'
+import { Building2, Tag, Users, Plus } from 'lucide-react'
+
+interface Department { id: string; name: string; code: string; status: string; _count: { users: number; assets: number } }
+interface Category { id: string; name: string; description?: string; warrantyPeriod?: number; _count: { assets: number } }
+interface Employee { id: string; name: string; email: string; role: string; status: string; department?: { name: string } }
+
+export default function SetupPage() {
+  const [tab, setTab] = useState<'departments' | 'categories' | 'employees'>('departments')
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [employees, setEmployees] = useState<Employee[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const [deptModal, setDeptModal] = useState(false)
+  const [catModal, setCatModal] = useState(false)
+  const [roleModal, setRoleModal] = useState<{ open: boolean; id: string; name: string; role: string }>({ open: false, id: '', name: '', role: '' })
+
+  const [deptForm, setDeptForm] = useState({ name: '', code: '', parentId: '' })
+  const [catForm, setCatForm] = useState({ name: '', description: '', warrantyPeriod: '' })
+  const [newRole, setNewRole] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  async function fetchAll() {
+    setLoading(true)
+    const [dRes, cRes, eRes] = await Promise.all([
+      fetch('/api/departments').then(r => r.json()),
+      fetch('/api/categories').then(r => r.json()),
+      fetch('/api/employees').then(r => r.json()),
+    ])
+    setDepartments(dRes.departments || [])
+    setCategories(cRes.categories || [])
+    setEmployees(eRes.employees || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { fetchAll() }, [])
+
+  async function createDept(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true)
+    setError('')
+    const res = await fetch('/api/departments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(deptForm),
+    })
+    const data = await res.json()
+    if (!res.ok) { setError(data.error); setSubmitting(false); return }
+    setDeptModal(false)
+    setDeptForm({ name: '', code: '', parentId: '' })
+    fetchAll()
+    setSubmitting(false)
+  }
+
+  async function createCategory(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true)
+    setError('')
+    const res = await fetch('/api/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...catForm, warrantyPeriod: catForm.warrantyPeriod ? Number(catForm.warrantyPeriod) : undefined }),
+    })
+    const data = await res.json()
+    if (!res.ok) { setError(data.error); setSubmitting(false); return }
+    setCatModal(false)
+    setCatForm({ name: '', description: '', warrantyPeriod: '' })
+    fetchAll()
+    setSubmitting(false)
+  }
+
+  async function updateRole(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true)
+    await fetch(`/api/employees/${roleModal.id}/role`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: newRole }),
+    })
+    setRoleModal({ open: false, id: '', name: '', role: '' })
+    fetchAll()
+    setSubmitting(false)
+  }
+
+  const inputCls = 'w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50'
+  const labelCls = 'block text-sm font-medium text-slate-300 mb-1.5'
+
+  const tabs = [
+    { key: 'departments', label: 'Departments', icon: Building2 },
+    { key: 'categories', label: 'Categories', icon: Tag },
+    { key: 'employees', label: 'Employees', icon: Users },
+  ] as const
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-100">Organization Setup</h1>
+        <p className="text-slate-400 mt-1">Configure departments, categories, and employee roles</p>
+      </div>
+
+      <div className="flex gap-1 bg-slate-800 border border-slate-700/50 rounded-xl p-1 w-fit">
+        {tabs.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === key ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-400 hover:text-slate-100'}`}
+          >
+            <Icon className="h-4 w-4" />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'departments' && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={() => setDeptModal(true)}
+              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2 rounded-lg text-sm transition-all shadow-lg shadow-amber-500/20"
+            >
+              <Plus className="h-4 w-4" />
+              Add Department
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {loading ? <div className="col-span-3 text-center text-slate-400 py-12 animate-pulse">Loading...</div> :
+              departments.map(d => (
+                <div key={d.id} className="bg-slate-800 border border-slate-700/50 rounded-xl p-5">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <div className="font-semibold text-slate-100">{d.name}</div>
+                      <div className="text-xs font-mono text-amber-400 mt-0.5">{d.code}</div>
+                    </div>
+                    <Badge status={d.status} />
+                  </div>
+                  <div className="flex gap-4 text-sm text-slate-400">
+                    <span>{d._count.users} employees</span>
+                    <span>{d._count.assets} assets</span>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      )}
+
+      {tab === 'categories' && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={() => setCatModal(true)}
+              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2 rounded-lg text-sm transition-all shadow-lg shadow-amber-500/20"
+            >
+              <Plus className="h-4 w-4" />
+              Add Category
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {loading ? <div className="col-span-3 text-center text-slate-400 py-12 animate-pulse">Loading...</div> :
+              categories.map(c => (
+                <div key={c.id} className="bg-slate-800 border border-slate-700/50 rounded-xl p-5">
+                  <div className="font-semibold text-slate-100 mb-1">{c.name}</div>
+                  {c.description && <div className="text-sm text-slate-400 mb-2">{c.description}</div>}
+                  <div className="flex gap-4 text-sm text-slate-400">
+                    <span>{c._count.assets} assets</span>
+                    {c.warrantyPeriod && <span>{c.warrantyPeriod}mo warranty</span>}
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      )}
+
+      {tab === 'employees' && (
+        <div className="bg-slate-800 border border-slate-700/50 rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-700">
+                  {['Name', 'Email', 'Department', 'Role', 'Status', 'Actions'].map(h => (
+                    <th key={h} className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-700/50">
+                {loading ? (
+                  <tr><td colSpan={6} className="text-center text-slate-400 py-12 animate-pulse">Loading...</td></tr>
+                ) : employees.map(emp => (
+                  <tr key={emp.id} className="hover:bg-slate-700/30 transition-colors">
+                    <td className="px-4 py-3 font-medium text-slate-100">{emp.name}</td>
+                    <td className="px-4 py-3 text-slate-400">{emp.email}</td>
+                    <td className="px-4 py-3 text-slate-300">{emp.department?.name || '—'}</td>
+                    <td className="px-4 py-3">
+                      <span className="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full">{emp.role.replace(/_/g, ' ')}</span>
+                    </td>
+                    <td className="px-4 py-3"><Badge status={emp.status} /></td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => { setRoleModal({ open: true, id: emp.id, name: emp.name, role: emp.role }); setNewRole(emp.role) }}
+                        className="text-xs text-slate-400 hover:text-slate-100 bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded-lg transition-all"
+                      >
+                        Change Role
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      <Modal open={deptModal} onClose={() => setDeptModal(false)} title="Add Department" size="sm">
+        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>}
+        <form onSubmit={createDept} className="space-y-4">
+          <div>
+            <label className={labelCls}>Department Name *</label>
+            <input value={deptForm.name} onChange={e => setDeptForm(p => ({ ...p, name: e.target.value }))} required placeholder="e.g. Information Technology" className={inputCls} />
+          </div>
+          <div>
+            <label className={labelCls}>Code *</label>
+            <input value={deptForm.code} onChange={e => setDeptForm(p => ({ ...p, code: e.target.value.toUpperCase() }))} required placeholder="e.g. IT" className={inputCls} />
+          </div>
+          <div>
+            <label className={labelCls}>Parent Department</label>
+            <select value={deptForm.parentId} onChange={e => setDeptForm(p => ({ ...p, parentId: e.target.value }))} className={inputCls}>
+              <option value="">None (Top level)</option>
+              {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+            </select>
+          </div>
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => setDeptModal(false)} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+              {submitting ? 'Creating...' : 'Create'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal open={catModal} onClose={() => setCatModal(false)} title="Add Category" size="sm">
+        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>}
+        <form onSubmit={createCategory} className="space-y-4">
+          <div>
+            <label className={labelCls}>Category Name *</label>
+            <input value={catForm.name} onChange={e => setCatForm(p => ({ ...p, name: e.target.value }))} required placeholder="e.g. Electronics" className={inputCls} />
+          </div>
+          <div>
+            <label className={labelCls}>Description</label>
+            <textarea value={catForm.description} onChange={e => setCatForm(p => ({ ...p, description: e.target.value }))} rows={2} className={inputCls + ' resize-none'} placeholder="Category description..." />
+          </div>
+          <div>
+            <label className={labelCls}>Warranty Period (months)</label>
+            <input type="number" value={catForm.warrantyPeriod} onChange={e => setCatForm(p => ({ ...p, warrantyPeriod: e.target.value }))} placeholder="e.g. 24" className={inputCls} />
+          </div>
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => setCatModal(false)} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+              {submitting ? 'Creating...' : 'Create'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal open={roleModal.open} onClose={() => setRoleModal({ open: false, id: '', name: '', role: '' })} title={`Change Role: ${roleModal.name}`} size="sm">
+        <form onSubmit={updateRole} className="space-y-4">
+          <div>
+            <label className={labelCls}>New Role</label>
+            <select value={newRole} onChange={e => setNewRole(e.target.value)} className={inputCls}>
+              {['ADMIN', 'ASSET_MANAGER', 'DEPARTMENT_HEAD', 'EMPLOYEE'].map(r => (
+                <option key={r} value={r}>{r.replace(/_/g, ' ')}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => setRoleModal({ open: false, id: '', name: '', role: '' })} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+              {submitting ? 'Updating...' : 'Update Role'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+    </div>
+  )
+}
