@@ -57,17 +57,17 @@ users never see actions they cannot perform.
 
 | Capability | Admin | Asset Manager | Department Head | Employee |
 | --- | :---: | :---: | :---: | :---: |
-| View all assets | ✅ | ✅ | Dept only | Own only |
-| Register assets | ✅ | ✅ | — | — |
-| Allocate assets | ✅ | ✅ | ✅ (dept) | — |
-| Approve transfers | ✅ | ✅ | ✅ (dept) | — |
-| Approve maintenance | ✅ | ✅ | — | — |
-| Raise maintenance / book resources | ✅ | ✅ | ✅ | ✅ |
-| Return / request transfer | ✅ | ✅ | ✅ | ✅ (own) |
-| Run & close audit cycles | ✅ | ✅ | — | — |
-| Record audit findings | ✅ | ✅ | — | ✅ (if assigned auditor) |
-| Organization Setup (departments, categories, roles) | ✅ | — | — | — |
-| Reports & analytics | ✅ | ✅ | ✅ | — |
+| View all assets | Yes | Yes | Dept only | Own only |
+| Register assets | Yes | Yes | — | — |
+| Allocate assets | Yes | Yes | Dept | — |
+| Approve transfers | Yes | Yes | Dept | — |
+| Approve maintenance | Yes | Yes | — | — |
+| Raise maintenance / book resources | Yes | Yes | Yes | Yes |
+| Return / request transfer | Yes | Yes | Yes | Own |
+| Run & close audit cycles | Yes | Yes | — | — |
+| Record audit findings | Yes | Yes | — | If assigned |
+| Organization Setup (departments, categories, roles) | Yes | — | — | — |
+| Reports & analytics | Yes | Yes | Yes | — |
 
 **How scoping works:** each read endpoint composes a Prisma `where` from `rbac.ts`
 (`assetScope`, `allocationScope`, `maintenanceScope`, …) *before* applying any user
