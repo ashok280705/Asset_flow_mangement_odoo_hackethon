@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Modal } from '@/components/ui/Modal'
 import { formatDate } from '@/lib/utils'
+import { usePermissions } from '@/components/SessionProvider'
 import { Plus, Wrench } from 'lucide-react'
 
 interface MaintenanceRequest {
@@ -20,6 +21,7 @@ interface MaintenanceRequest {
 interface Asset { id: string; name: string; assetTag: string }
 
 export default function MaintenancePage() {
+  const { isManager } = usePermissions()
   const [requests, setRequests] = useState<MaintenanceRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -157,13 +159,15 @@ export default function MaintenancePage() {
                     <td className="px-4 py-3 text-[#8c8a80]">{formatDate(r.createdAt)}</td>
                     <td className="px-4 py-3"><Badge status={r.status} /></td>
                     <td className="px-4 py-3">
-                      {nextStatuses[r.status] && (
+                      {isManager && nextStatuses[r.status] ? (
                         <button
                           onClick={() => { setUpdateModal({ open: true, id: r.id, currentStatus: r.status }); setUpdateForm({ status: nextStatuses[r.status][0], notes: '' }) }}
                           className="text-xs text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg transition-all"
                         >
                           Update
                         </button>
+                      ) : (
+                        <span className="text-xs text-[#a8a69b]">—</span>
                       )}
                     </td>
                   </tr>
