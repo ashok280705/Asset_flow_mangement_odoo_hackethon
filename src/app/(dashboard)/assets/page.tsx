@@ -2,9 +2,11 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/Badge'
+import { Modal } from '@/components/ui/Modal'
 import { formatDate } from '@/lib/utils'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonRows } from '@/components/ui/Skeleton'
+import { AssetDetail } from './AssetDetail'
 import { usePermissions } from '@/components/SessionProvider'
 import { Search, Plus, Filter, Package, PackageOpen } from 'lucide-react'
 
@@ -23,6 +25,8 @@ interface Asset {
   allocations: { user: { name: string } }[]
 }
 
+interface Option { id: string; name: string }
+
 export default function AssetsPage() {
   const { isManager } = usePermissions()
   const [assets, setAssets] = useState<Asset[]>([])
@@ -30,23 +34,41 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
+  const [categoryId, setCategoryId] = useState('')
+  const [departmentId, setDepartmentId] = useState('')
   const [page, setPage] = useState(1)
+  const [categories, setCategories] = useState<Option[]>([])
+  const [departments, setDepartments] = useState<Option[]>([])
+  const [detailId, setDetailId] = useState<string | null>(null)
 
   const fetchAssets = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (search) params.set('search', search)
     if (status) params.set('status', status)
+    if (categoryId) params.set('categoryId', categoryId)
+    if (departmentId) params.set('departmentId', departmentId)
     const res = await fetch(`/api/assets?${params}`)
     const data = await res.json()
     setAssets(data.assets || [])
     setTotal(data.total || 0)
     setLoading(false)
-  }, [search, status, page])
+  }, [search, status, categoryId, departmentId, page])
 
   useEffect(() => { fetchAssets() }, [fetchAssets])
 
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/categories').then(r => r.json()).catch(() => ({})),
+      fetch('/api/departments').then(r => r.json()).catch(() => ({})),
+    ]).then(([c, d]) => {
+      setCategories(c.categories || [])
+      setDepartments(d.departments || [])
+    })
+  }, [])
+
   const statuses = ['AVAILABLE', 'ALLOCATED', 'RESERVED', 'UNDER_MAINTENANCE', 'LOST', 'RETIRED', 'DISPOSED']
+  const hasFilters = Boolean(search || status || categoryId || departmentId)
 
   return (
     <div className="space-y-6 af-fade-in">
@@ -80,8 +102,8 @@ export default function AssetsPage() {
               className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#e0ded7] rounded-xl text-sm text-[#1c1b18] placeholder-[#a8a69b] focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-500"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-[#8c8a80]" />
+          <div className="flex flex-wrap items-center gap-2">
+            <Filter className="h-4 w-4 text-[#8c8a80] shrink-0" />
             <select
               value={status}
               onChange={e => { setStatus(e.target.value); setPage(1) }}
@@ -90,6 +112,24 @@ export default function AssetsPage() {
               <option value="">All Statuses</option>
               {statuses.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
             </select>
+            <select
+              value={categoryId}
+              onChange={e => { setCategoryId(e.target.value); setPage(1) }}
+              className="bg-white border border-[#e0ded7] rounded-xl text-sm text-[#1c1b18] px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-500"
+            >
+              <option value="">All Categories</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+            {isManager && (
+              <select
+                value={departmentId}
+                onChange={e => { setDepartmentId(e.target.value); setPage(1) }}
+                className="bg-white border border-[#e0ded7] rounded-xl text-sm text-[#1c1b18] px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-500"
+              >
+                <option value="">All Departments</option>
+                {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            )}
           </div>
         </div>
       </div>
@@ -104,19 +144,19 @@ export default function AssetsPage() {
           </div>
         ) : assets.length === 0 ? (
           <EmptyState
-            icon={search || status ? Search : PackageOpen}
-            title={search || status ? 'No matching assets' : isManager ? 'No assets yet' : 'No assets assigned to you'}
+            icon={hasFilters ? Search : PackageOpen}
+            title={hasFilters ? 'No matching assets' : isManager ? 'No assets yet' : 'No assets assigned to you'}
             description={
-              search || status
-                ? 'Try adjusting your search or clearing the status filter.'
+              hasFilters
+                ? 'Try adjusting your search or clearing the filters.'
                 : isManager
                   ? 'Register your first asset to start tracking allocation, maintenance and audits.'
                   : 'Assets allocated to you will appear here. Raise a request if you need equipment.'
             }
             action={
-              search || status ? (
+              hasFilters ? (
                 <button
-                  onClick={() => { setSearch(''); setStatus(''); setPage(1) }}
+                  onClick={() => { setSearch(''); setStatus(''); setCategoryId(''); setDepartmentId(''); setPage(1) }}
                   className="inline-flex items-center gap-2 bg-white border border-[#e0ded7] hover:border-[#d3d0c8] text-[#1c1b18] font-medium px-4 py-2 rounded-xl text-sm shadow-xs transition-all"
                 >
                   Clear filters
@@ -145,7 +185,11 @@ export default function AssetsPage() {
               </thead>
               <tbody className="divide-y divide-[#f0eee9]">
                 {assets.map(asset => (
-                  <tr key={asset.id} className="hover:bg-[#faf9f6] transition-colors">
+                  <tr
+                    key={asset.id}
+                    onClick={() => setDetailId(asset.id)}
+                    className="hover:bg-[#faf9f6] transition-colors cursor-pointer"
+                  >
                     <td className="px-4 py-3">
                       <span className="font-mono text-emerald-700 text-xs font-semibold">{asset.assetTag}</span>
                     </td>
@@ -190,6 +234,10 @@ export default function AssetsPage() {
           </div>
         )}
       </div>
+
+      <Modal open={!!detailId} onClose={() => setDetailId(null)} title="Asset Details" size="xl">
+        {detailId && <AssetDetail id={detailId} />}
+      </Modal>
     </div>
   )
 }
