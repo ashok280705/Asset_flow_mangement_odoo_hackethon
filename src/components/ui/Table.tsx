@@ -26,12 +26,12 @@ export function Table<T extends Record<string, unknown>>({
     <div className={cn('overflow-x-auto', className)}>
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-700">
+          <tr className="border-b border-[#eceae4] bg-[#faf9f6]">
             {columns.map((col) => (
               <th
                 key={col.key}
                 className={cn(
-                  'text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3',
+                  'text-left text-[11px] font-semibold text-[#8c8a80] uppercase tracking-wider px-4 py-3',
                   col.className
                 )}
               >
@@ -40,12 +40,12 @@ export function Table<T extends Record<string, unknown>>({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-700/50">
+        <tbody className="divide-y divide-[#f0eee9]">
           {data.length === 0 ? (
             <tr>
               <td
                 colSpan={columns.length}
-                className="text-center text-slate-400 py-12"
+                className="text-center text-[#8c8a80] py-12"
               >
                 {emptyMessage}
               </td>
@@ -54,10 +54,10 @@ export function Table<T extends Record<string, unknown>>({
             data.map((row, i) => (
               <tr
                 key={String(row[keyField]) || i}
-                className="hover:bg-slate-700/30 transition-colors"
+                className="hover:bg-[#faf9f6] transition-colors"
               >
                 {columns.map((col) => (
-                  <td key={col.key} className={cn('px-4 py-3 text-slate-300', col.className)}>
+                  <td key={col.key} className={cn('px-4 py-3.5 text-[#57564f]', col.className)}>
                     {col.render ? col.render(row) : String(row[col.key] ?? '')}
                   </td>
                 ))}

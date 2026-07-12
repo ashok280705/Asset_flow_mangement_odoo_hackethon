@@ -10,22 +10,28 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', loading, children, disabled, ...props }, ref) => {
     const variants = {
-      primary: 'bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold shadow-lg shadow-amber-500/20',
-      secondary: 'bg-slate-700 hover:bg-slate-600 text-slate-100 border border-slate-600',
-      danger: 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20',
-      ghost: 'hover:bg-slate-800 text-slate-400 hover:text-slate-100',
+      primary:
+        'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium shadow-xs',
+      secondary:
+        'bg-white hover:bg-stone-50 active:bg-stone-100 text-[#1c1b18] font-medium border border-[#e0ded7] shadow-xs',
+      danger:
+        'bg-white hover:bg-rose-50 active:bg-rose-100 text-rose-600 font-medium border border-rose-200',
+      ghost:
+        'text-[#57564f] hover:bg-stone-100 hover:text-[#1c1b18] font-medium',
     }
     const sizes = {
-      sm: 'px-3 py-1.5 text-xs rounded-md',
-      md: 'px-4 py-2 text-sm rounded-lg',
-      lg: 'px-6 py-3 text-base rounded-xl',
+      sm: 'px-3 py-1.5 text-xs rounded-[10px]',
+      md: 'px-4 py-2.5 text-sm rounded-xl',
+      lg: 'px-5 py-3 text-[15px] rounded-xl',
     }
     return (
       <button
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          'inline-flex items-center justify-center gap-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed',
+          'inline-flex items-center justify-center gap-2 transition-all duration-200',
+          'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-emerald-600/25',
+          'active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
           variants[variant],
           sizes[size],
           className
