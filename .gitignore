@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# walkthrough recording artifacts (local only)
+/walkthrough-video
+/scripts
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

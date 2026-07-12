@@ -1,34 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap');
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+/* ============================================================
+   AssetFlow — Premium light-first design system
+   Identity: emerald + warm neutrals, amber highlights,
+   rose for destructive. Not a generic blue dashboard.
+   ============================================================ */
 
 :root {
-  --background: #0f172a;
-  --foreground: #f1f5f9;
-}
+  /* surfaces */
+  --bg: #f6f5f2;
+  --surface: #ffffff;
+  --surface-2: #fbfaf8;
+  --surface-inset: #f4f3ef;
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', system-ui, sans-serif;
+  /* borders */
+  --border: #e9e7e1;
+  --border-strong: #ddd9d1;
+
+  /* text (warm charcoal ramp) */
+  --text: #1c1b18;
+  --text-2: #57564f;
+  --text-3: #8c8a80;
+  --text-4: #a8a69b;
+
+  /* brand: emerald */
+  --accent: #059669;
+  --accent-hover: #047857;
+  --accent-press: #036249;
+  --accent-soft: #ecfdf5;
+  --accent-softer: #f3fbf7;
+  --accent-ring: rgba(5, 150, 105, 0.28);
+
+  /* supporting */
+  --amber: #d97706;
+  --amber-soft: #fef6e7;
+  --teal: #0d9488;
+  --forest: #14532d;
+  --purple: #7c6f9f;
+  --rose: #e11d48;
+  --rose-soft: #fff1f3;
+
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --radius-sm: 10px;
+
+  --shadow-xs: 0 1px 2px rgba(28, 27, 24, 0.05);
+  --shadow-sm: 0 1px 3px rgba(28, 27, 24, 0.06), 0 1px 2px rgba(28, 27, 24, 0.04);
+  --shadow-md: 0 4px 12px -2px rgba(28, 27, 24, 0.08), 0 2px 6px -2px rgba(28, 27, 24, 0.05);
+  --shadow-lg: 0 12px 32px -8px rgba(28, 27, 24, 0.14), 0 4px 12px -4px rgba(28, 27, 24, 0.08);
 }
 
 * {
   box-sizing: border-box;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
 }
 
-::-webkit-scrollbar-track {
-  background: #1e293b;
+h1, h2, h3, h4 {
+  letter-spacing: -0.02em;
 }
 
+/* ---- scrollbar (light, subtle) ---- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: #475569;
-  border-radius: 3px;
+  background: #d9d6ce;
+  border-radius: 8px;
+  border: 3px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover { background: #c4c0b6; }
+
+/* ---- selection ---- */
+::selection { background: var(--accent-soft); color: var(--accent-press); }
+
+/* ============================================================
+   Reusable component classes (cohesive language)
+   ============================================================ */
+
+.af-surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+.af-inset {
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+}
+
+.af-hover-lift {
+  transition: box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.22s ease;
+}
+.af-hover-lift:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+}
+
+.af-focus:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-ring);
+  border-color: var(--accent);
+}
+
+/* ============================================================
+   Motion — subtle, fast, refined
+   ============================================================ */
+
+@keyframes af-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes af-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes af-scale-in {
+  from { opacity: 0; transform: scale(0.97) translateY(4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes af-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.af-fade-in { animation: af-fade-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.af-fade    { animation: af-fade 0.3s ease both; }
+.af-scale-in { animation: af-scale-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+.af-stagger > * { animation: af-fade-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.af-stagger > *:nth-child(1) { animation-delay: 0.02s; }
+.af-stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.af-stagger > *:nth-child(3) { animation-delay: 0.10s; }
+.af-stagger > *:nth-child(4) { animation-delay: 0.14s; }
+.af-stagger > *:nth-child(5) { animation-delay: 0.18s; }
+.af-stagger > *:nth-child(6) { animation-delay: 0.22s; }
+.af-stagger > *:nth-child(7) { animation-delay: 0.26s; }
+.af-stagger > *:nth-child(8) { animation-delay: 0.30s; }
+
+.af-skeleton {
+  background: linear-gradient(90deg, #eeece7 25%, #f6f4f0 37%, #eeece7 63%);
+  background-size: 800px 100%;
+  animation: af-shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .af-fade-in, .af-fade, .af-scale-in, .af-stagger > *, .af-skeleton {
+    animation: none !important;
+  }
+  .af-hover-lift { transition: none; }
 }

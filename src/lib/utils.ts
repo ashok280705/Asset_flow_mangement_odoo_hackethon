@@ -33,29 +33,50 @@ export function isOverdue(date: Date | string | null | undefined): boolean {
 }
 
 export function getStatusColor(status: string): string {
+  // Light-first badge tokens: soft tinted fill + darker on-tint text + hairline ring.
+  const emerald = 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-600/15'
+  const amber = 'text-amber-700 bg-amber-50 ring-1 ring-amber-600/15'
+  const teal = 'text-teal-700 bg-teal-50 ring-1 ring-teal-600/15'
+  const orange = 'text-orange-700 bg-orange-50 ring-1 ring-orange-600/15'
+  const rose = 'text-rose-700 bg-rose-50 ring-1 ring-rose-600/15'
+  const neutral = 'text-stone-600 bg-stone-100 ring-1 ring-stone-500/15'
+  const purple = 'text-violet-700 bg-violet-50 ring-1 ring-violet-600/15'
+
   const colors: Record<string, string> = {
-    AVAILABLE: 'text-emerald-400 bg-emerald-400/10',
-    ALLOCATED: 'text-amber-400 bg-amber-400/10',
-    RESERVED: 'text-blue-400 bg-blue-400/10',
-    UNDER_MAINTENANCE: 'text-orange-400 bg-orange-400/10',
-    LOST: 'text-red-400 bg-red-400/10',
-    RETIRED: 'text-slate-400 bg-slate-400/10',
-    DISPOSED: 'text-slate-500 bg-slate-500/10',
-    ACTIVE: 'text-emerald-400 bg-emerald-400/10',
-    INACTIVE: 'text-slate-400 bg-slate-400/10',
-    PENDING: 'text-amber-400 bg-amber-400/10',
-    APPROVED: 'text-emerald-400 bg-emerald-400/10',
-    REJECTED: 'text-red-400 bg-red-400/10',
-    RESOLVED: 'text-emerald-400 bg-emerald-400/10',
-    IN_PROGRESS: 'text-blue-400 bg-blue-400/10',
-    UPCOMING: 'text-blue-400 bg-blue-400/10',
-    ONGOING: 'text-emerald-400 bg-emerald-400/10',
-    COMPLETED: 'text-slate-400 bg-slate-400/10',
-    CANCELLED: 'text-red-400 bg-red-400/10',
-    OVERDUE: 'text-red-400 bg-red-400/10',
-    RETURNED: 'text-slate-400 bg-slate-400/10',
-    OPEN: 'text-blue-400 bg-blue-400/10',
-    CLOSED: 'text-slate-400 bg-slate-400/10',
+    AVAILABLE: emerald,
+    ALLOCATED: amber,
+    RESERVED: teal,
+    UNDER_MAINTENANCE: orange,
+    LOST: rose,
+    RETIRED: neutral,
+    DISPOSED: neutral,
+    ACTIVE: emerald,
+    INACTIVE: neutral,
+    PENDING: amber,
+    APPROVED: emerald,
+    REJECTED: rose,
+    RESOLVED: emerald,
+    IN_PROGRESS: teal,
+    TECHNICIAN_ASSIGNED: purple,
+    UPCOMING: teal,
+    ONGOING: emerald,
+    COMPLETED: neutral,
+    CANCELLED: rose,
+    OVERDUE: rose,
+    RETURNED: neutral,
+    OPEN: teal,
+    CLOSED: neutral,
+    // conditions
+    EXCELLENT: emerald,
+    GOOD: emerald,
+    FAIR: amber,
+    POOR: orange,
+    DAMAGED: rose,
+    // priority
+    LOW: neutral,
+    MEDIUM: amber,
+    HIGH: orange,
+    CRITICAL: rose,
   }
-  return colors[status] || 'text-slate-400 bg-slate-400/10'
+  return colors[status] || neutral
 }
