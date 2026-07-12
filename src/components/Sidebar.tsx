@@ -29,6 +29,7 @@ const navGroups: { label: string; items: NavItem[] }[] = [
     label: 'Overview',
     items: [
       { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/setup', label: 'Setup', icon: Settings, roles: ['ADMIN'] },
       { href: '/reports', label: 'Reports', icon: BarChart3, roles: ['ADMIN', 'ASSET_MANAGER', 'DEPARTMENT_HEAD'] },
     ],
   },
@@ -46,7 +47,6 @@ const navGroups: { label: string; items: NavItem[] }[] = [
     label: 'System',
     items: [
       { href: '/notifications', label: 'Notifications', icon: Bell },
-      { href: '/setup', label: 'Setup', icon: Settings, roles: ['ADMIN'] },
     ],
   },
 ]
