@@ -3,7 +3,10 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/Badge'
 import { formatDate } from '@/lib/utils'
-import { Search, Plus, Filter, Package } from 'lucide-react'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { SkeletonRows } from '@/components/ui/Skeleton'
+import { usePermissions } from '@/components/SessionProvider'
+import { Search, Plus, Filter, Package, PackageOpen } from 'lucide-react'
 
 interface Asset {
   id: string
@@ -21,6 +24,7 @@ interface Asset {
 }
 
 export default function AssetsPage() {
+  const { isManager } = usePermissions()
   const [assets, setAssets] = useState<Asset[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -49,15 +53,19 @@ export default function AssetsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[26px] font-semibold text-[#1c1b18] tracking-tight">Asset Directory</h1>
-          <p className="text-[#8c8a80] text-[14px] mt-1">{total} assets registered</p>
+          <p className="text-[#8c8a80] text-[14px] mt-1">
+            {isManager ? `${total} assets registered` : `${total} asset${total === 1 ? '' : 's'} assigned to you`}
+          </p>
         </div>
-        <Link
-          href="/assets/register"
-          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all shadow-xs"
-        >
-          <Plus className="h-4 w-4" />
-          Register Asset
-        </Link>
+        {isManager && (
+          <Link
+            href="/assets/register"
+            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all shadow-xs"
+          >
+            <Plus className="h-4 w-4" />
+            Register Asset
+          </Link>
+        )}
       </div>
 
       <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl p-4">
@@ -88,21 +96,48 @@ export default function AssetsPage() {
 
       <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center h-48">
-            <div className="text-[#8c8a80] animate-pulse">Loading assets...</div>
+          <div>
+            <div className="bg-[#faf9f6] border-b border-[#eceae4] px-4 py-3">
+              <div className="af-skeleton h-3 w-40" />
+            </div>
+            <SkeletonRows rows={8} cols={8} />
           </div>
         ) : assets.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 gap-3">
-            <Package className="h-12 w-12 text-[#d3d0c8]" />
-            <p className="text-[#8c8a80]">No assets found</p>
-          </div>
+          <EmptyState
+            icon={search || status ? Search : PackageOpen}
+            title={search || status ? 'No matching assets' : isManager ? 'No assets yet' : 'No assets assigned to you'}
+            description={
+              search || status
+                ? 'Try adjusting your search or clearing the status filter.'
+                : isManager
+                  ? 'Register your first asset to start tracking allocation, maintenance and audits.'
+                  : 'Assets allocated to you will appear here. Raise a request if you need equipment.'
+            }
+            action={
+              search || status ? (
+                <button
+                  onClick={() => { setSearch(''); setStatus(''); setPage(1) }}
+                  className="inline-flex items-center gap-2 bg-white border border-[#e0ded7] hover:border-[#d3d0c8] text-[#1c1b18] font-medium px-4 py-2 rounded-xl text-sm shadow-xs transition-all"
+                >
+                  Clear filters
+                </button>
+              ) : isManager ? (
+                <Link
+                  href="/assets/register"
+                  className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-xl text-sm shadow-xs transition-all"
+                >
+                  <Plus className="h-4 w-4" /> Register Asset
+                </Link>
+              ) : undefined
+            }
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-[#faf9f6] border-b border-[#eceae4]">
                   {['Asset Tag', 'Name', 'Category', 'Status', 'Condition', 'Department', 'Assigned To', 'Acquired'].map(h => (
-                    <th key={h} className="text-left text-[11px] font-semibold text-[#8c8a80] uppercase tracking-wider px-4 py-3">
+                    <th key={h} className="sticky top-0 bg-[#faf9f6] text-left text-[11px] font-semibold text-[#8c8a80] uppercase tracking-wider px-4 py-3">
                       {h}
                     </th>
                   ))}
