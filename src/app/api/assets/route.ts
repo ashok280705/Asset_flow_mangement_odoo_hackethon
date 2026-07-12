@@ -16,13 +16,17 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get('status') || ''
   const categoryId = searchParams.get('categoryId') || ''
   const departmentId = searchParams.get('departmentId') || ''
+  const bookableOnly = searchParams.get('isBookable') === 'true'
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
 
-  // Role scope first (employee → own; dept head → their dept; managers → all),
-  // then layer the requested filters on top with AND so a filter can never
-  // widen what the user is allowed to see.
-  const filters: Prisma.AssetWhereInput[] = [assetScope(user)]
+  // Shared bookable resources are visible to everyone (that's the point of a
+  // shared resource); the personal/department scope only governs the regular
+  // asset directory. Otherwise scope first, then AND the requested filters so a
+  // filter can never widen what the user is allowed to see.
+  const filters: Prisma.AssetWhereInput[] = bookableOnly
+    ? [{ isBookable: true }]
+    : [assetScope(user)]
   if (search) {
     filters.push({
       OR: [
