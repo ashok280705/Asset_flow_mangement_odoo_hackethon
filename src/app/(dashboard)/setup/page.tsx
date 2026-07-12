@@ -87,8 +87,8 @@ export default function SetupPage() {
     setSubmitting(false)
   }
 
-  const inputCls = 'w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50'
-  const labelCls = 'block text-sm font-medium text-slate-300 mb-1.5'
+  const inputCls = 'w-full bg-white border border-[#e0ded7] text-[#1c1b18] placeholder-[#a8a69b] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20'
+  const labelCls = 'block text-sm font-medium text-[#57564f] mb-1.5'
 
   const tabs = [
     { key: 'departments', label: 'Departments', icon: Building2 },
@@ -97,18 +97,18 @@ export default function SetupPage() {
   ] as const
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 af-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-slate-100">Organization Setup</h1>
-        <p className="text-slate-400 mt-1">Configure departments, categories, and employee roles</p>
+        <h1 className="text-[26px] font-semibold text-[#1c1b18] tracking-tight">Organization Setup</h1>
+        <p className="text-[#8c8a80] mt-1">Configure departments, categories, and employee roles</p>
       </div>
 
-      <div className="flex gap-1 bg-slate-800 border border-slate-700/50 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-white border border-[#eceae4] shadow-soft rounded-xl p-1 w-fit">
         {tabs.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === key ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-400 hover:text-slate-100'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === key ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'text-[#8c8a80] hover:text-[#1c1b18]'}`}
           >
             <Icon className="h-4 w-4" />
             {label}
@@ -121,24 +121,24 @@ export default function SetupPage() {
           <div className="flex justify-end">
             <button
               onClick={() => setDeptModal(true)}
-              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2 rounded-lg text-sm transition-all shadow-lg shadow-amber-500/20"
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all shadow-xs"
             >
               <Plus className="h-4 w-4" />
               Add Department
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {loading ? <div className="col-span-3 text-center text-slate-400 py-12 animate-pulse">Loading...</div> :
+            {loading ? <div className="col-span-3 text-center text-[#8c8a80] py-12 animate-pulse">Loading...</div> :
               departments.map(d => (
-                <div key={d.id} className="bg-slate-800 border border-slate-700/50 rounded-xl p-5">
+                <div key={d.id} className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl p-5 af-hover-lift">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <div className="font-semibold text-slate-100">{d.name}</div>
-                      <div className="text-xs font-mono text-amber-400 mt-0.5">{d.code}</div>
+                      <div className="font-semibold text-[#1c1b18]">{d.name}</div>
+                      <div className="text-xs font-mono text-emerald-700 mt-0.5">{d.code}</div>
                     </div>
                     <Badge status={d.status} />
                   </div>
-                  <div className="flex gap-4 text-sm text-slate-400">
+                  <div className="flex gap-4 text-sm text-[#8c8a80]">
                     <span>{d._count.users} employees</span>
                     <span>{d._count.assets} assets</span>
                   </div>
@@ -154,19 +154,19 @@ export default function SetupPage() {
           <div className="flex justify-end">
             <button
               onClick={() => setCatModal(true)}
-              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2 rounded-lg text-sm transition-all shadow-lg shadow-amber-500/20"
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all shadow-xs"
             >
               <Plus className="h-4 w-4" />
               Add Category
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {loading ? <div className="col-span-3 text-center text-slate-400 py-12 animate-pulse">Loading...</div> :
+            {loading ? <div className="col-span-3 text-center text-[#8c8a80] py-12 animate-pulse">Loading...</div> :
               categories.map(c => (
-                <div key={c.id} className="bg-slate-800 border border-slate-700/50 rounded-xl p-5">
-                  <div className="font-semibold text-slate-100 mb-1">{c.name}</div>
-                  {c.description && <div className="text-sm text-slate-400 mb-2">{c.description}</div>}
-                  <div className="flex gap-4 text-sm text-slate-400">
+                <div key={c.id} className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl p-5 af-hover-lift">
+                  <div className="font-semibold text-[#1c1b18] mb-1">{c.name}</div>
+                  {c.description && <div className="text-sm text-[#8c8a80] mb-2">{c.description}</div>}
+                  <div className="flex gap-4 text-sm text-[#8c8a80]">
                     <span>{c._count.assets} assets</span>
                     {c.warrantyPeriod && <span>{c.warrantyPeriod}mo warranty</span>}
                   </div>
@@ -178,32 +178,32 @@ export default function SetupPage() {
       )}
 
       {tab === 'employees' && (
-        <div className="bg-slate-800 border border-slate-700/50 rounded-xl overflow-hidden">
+        <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700">
+                <tr className="border-b border-[#eceae4] bg-[#faf9f6]">
                   {['Name', 'Email', 'Department', 'Role', 'Status', 'Actions'].map(h => (
-                    <th key={h} className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">{h}</th>
+                    <th key={h} className="text-left text-xs font-semibold text-[#8c8a80] uppercase tracking-wider px-4 py-3">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50">
+              <tbody className="divide-y divide-[#f0eee9]">
                 {loading ? (
-                  <tr><td colSpan={6} className="text-center text-slate-400 py-12 animate-pulse">Loading...</td></tr>
+                  <tr><td colSpan={6} className="text-center text-[#8c8a80] py-12 animate-pulse">Loading...</td></tr>
                 ) : employees.map(emp => (
-                  <tr key={emp.id} className="hover:bg-slate-700/30 transition-colors">
-                    <td className="px-4 py-3 font-medium text-slate-100">{emp.name}</td>
-                    <td className="px-4 py-3 text-slate-400">{emp.email}</td>
-                    <td className="px-4 py-3 text-slate-300">{emp.department?.name || '—'}</td>
+                  <tr key={emp.id} className="hover:bg-[#faf9f6] transition-colors">
+                    <td className="px-4 py-3 font-medium text-[#1c1b18]">{emp.name}</td>
+                    <td className="px-4 py-3 text-[#8c8a80]">{emp.email}</td>
+                    <td className="px-4 py-3 text-[#57564f]">{emp.department?.name || '—'}</td>
                     <td className="px-4 py-3">
-                      <span className="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full">{emp.role.replace(/_/g, ' ')}</span>
+                      <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">{emp.role.replace(/_/g, ' ')}</span>
                     </td>
                     <td className="px-4 py-3"><Badge status={emp.status} /></td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => { setRoleModal({ open: true, id: emp.id, name: emp.name, role: emp.role }); setNewRole(emp.role) }}
-                        className="text-xs text-slate-400 hover:text-slate-100 bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded-lg transition-all"
+                        className="text-xs text-[#57564f] hover:text-[#1c1b18] bg-stone-100 hover:bg-[#faf9f6] px-2.5 py-1 rounded-xl transition-all"
                       >
                         Change Role
                       </button>
@@ -217,7 +217,7 @@ export default function SetupPage() {
       )}
 
       <Modal open={deptModal} onClose={() => setDeptModal(false)} title="Add Department" size="sm">
-        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>}
+        {error && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">{error}</div>}
         <form onSubmit={createDept} className="space-y-4">
           <div>
             <label className={labelCls}>Department Name *</label>
@@ -235,8 +235,8 @@ export default function SetupPage() {
             </select>
           </div>
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={() => setDeptModal(false)} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+            <button type="button" onClick={() => setDeptModal(false)} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Creating...' : 'Create'}
             </button>
           </div>
@@ -244,7 +244,7 @@ export default function SetupPage() {
       </Modal>
 
       <Modal open={catModal} onClose={() => setCatModal(false)} title="Add Category" size="sm">
-        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>}
+        {error && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">{error}</div>}
         <form onSubmit={createCategory} className="space-y-4">
           <div>
             <label className={labelCls}>Category Name *</label>
@@ -259,8 +259,8 @@ export default function SetupPage() {
             <input type="number" value={catForm.warrantyPeriod} onChange={e => setCatForm(p => ({ ...p, warrantyPeriod: e.target.value }))} placeholder="e.g. 24" className={inputCls} />
           </div>
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={() => setCatModal(false)} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+            <button type="button" onClick={() => setCatModal(false)} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Creating...' : 'Create'}
             </button>
           </div>
@@ -278,8 +278,8 @@ export default function SetupPage() {
             </select>
           </div>
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={() => setRoleModal({ open: false, id: '', name: '', role: '' })} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+            <button type="button" onClick={() => setRoleModal({ open: false, id: '', name: '', role: '' })} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Updating...' : 'Update Role'}
             </button>
           </div>

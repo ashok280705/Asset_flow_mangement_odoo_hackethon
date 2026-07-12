@@ -33,12 +33,12 @@ const TYPE_ICON: Record<string, React.ElementType> = {
 }
 
 const TYPE_COLOR: Record<string, string> = {
-  ASSET: 'text-amber-400',
-  MAINTENANCE: 'text-orange-400',
-  BOOKING: 'text-blue-400',
-  TRANSFER: 'text-purple-400',
-  OVERDUE: 'text-red-400',
-  AUDIT: 'text-emerald-400',
+  ASSET: 'text-emerald-600',
+  MAINTENANCE: 'text-orange-600',
+  BOOKING: 'text-teal-600',
+  TRANSFER: 'text-violet-600',
+  OVERDUE: 'text-rose-600',
+  AUDIT: 'text-emerald-600',
 }
 
 export default function NotificationsPage() {
@@ -70,41 +70,41 @@ export default function NotificationsPage() {
 
   const unreadCount = notifications.filter(n => !n.read).length
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400 animate-pulse">Loading...</div>
+  if (loading) return <div className="flex items-center justify-center h-64 text-[#8c8a80] animate-pulse">Loading...</div>
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 af-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-            <Bell className="text-amber-400" />
+          <h1 className="text-[26px] font-semibold text-[#1c1b18] tracking-tight flex items-center gap-2">
+            <Bell className="text-emerald-600" />
             Notifications
             {unreadCount > 0 && (
-              <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{unreadCount}</span>
+              <span className="bg-rose-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{unreadCount}</span>
             )}
           </h1>
-          <p className="text-slate-400 mt-1">Stay updated on all activities</p>
+          <p className="text-[#8c8a80] mt-1">Stay updated on all activities</p>
         </div>
         {unreadCount > 0 && (
           <button
             onClick={markAllRead}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm rounded-lg transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-[#e6e4dd] hover:bg-[#faf9f6] text-[#57564f] text-sm rounded-xl transition-all"
           >
             <CheckCheck className="h-4 w-4" /> Mark all read
           </button>
         )}
       </div>
 
-      <div className="flex gap-1 bg-slate-800/50 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-[#faf9f6] border border-[#eceae4] p-1 rounded-xl w-fit">
         <button
           onClick={() => setTab('notifications')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'notifications' ? 'bg-amber-500 text-slate-900' : 'text-slate-400 hover:text-slate-200'}`}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'notifications' ? 'bg-emerald-600 text-white' : 'text-[#8c8a80] hover:text-[#1c1b18]'}`}
         >
           Notifications {unreadCount > 0 && `(${unreadCount})`}
         </button>
         <button
           onClick={() => setTab('logs')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'logs' ? 'bg-amber-500 text-slate-900' : 'text-slate-400 hover:text-slate-200'}`}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'logs' ? 'bg-emerald-600 text-white' : 'text-[#8c8a80] hover:text-[#1c1b18]'}`}
         >
           Activity Log
         </button>
@@ -113,31 +113,31 @@ export default function NotificationsPage() {
       {tab === 'notifications' && (
         <div className="space-y-3">
           {notifications.length === 0 && (
-            <Card><p className="text-slate-400 text-sm text-center py-12">No notifications yet</p></Card>
+            <Card><p className="text-[#8c8a80] text-sm text-center py-12">No notifications yet</p></Card>
           )}
           {notifications.map(notif => {
             const Icon = TYPE_ICON[notif.type] || Bell
-            const color = TYPE_COLOR[notif.type] || 'text-amber-400'
+            const color = TYPE_COLOR[notif.type] || 'text-emerald-600'
             return (
               <div
                 key={notif.id}
                 onClick={() => !notif.read && markRead(notif.id)}
-                className={`flex items-start gap-4 p-4 rounded-xl border transition-all cursor-pointer ${
+                className={`flex items-start gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${
                   notif.read
-                    ? 'bg-slate-800/30 border-slate-800/50 opacity-60'
-                    : 'bg-slate-800 border-slate-700 hover:border-amber-500/30'
+                    ? 'bg-white border-[#f0eee9] opacity-60'
+                    : 'bg-white border-[#e9e7e1] shadow-soft hover:border-emerald-600/30 af-hover-lift'
                 }`}
               >
-                <div className={`p-2 rounded-lg bg-slate-900 ${color} flex-shrink-0`}>
+                <div className={`p-2 rounded-xl bg-[#faf9f6] ${color} flex-shrink-0`}>
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold text-slate-100">{notif.title}</p>
-                    {!notif.read && <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />}
+                    <p className="text-sm font-semibold text-[#1c1b18]">{notif.title}</p>
+                    {!notif.read && <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />}
                   </div>
-                  <p className="text-sm text-slate-400 mt-0.5">{notif.message}</p>
-                  <p className="text-xs text-slate-500 mt-1">{formatDateTime(notif.createdAt)}</p>
+                  <p className="text-sm text-[#57564f] mt-0.5">{notif.message}</p>
+                  <p className="text-xs text-[#a8a69b] mt-1">{formatDateTime(notif.createdAt)}</p>
                 </div>
               </div>
             )
@@ -149,19 +149,19 @@ export default function NotificationsPage() {
         <Card title="Full Activity Log">
           <div className="space-y-2">
             {logs.length === 0 && (
-              <p className="text-slate-400 text-sm text-center py-8">No activity recorded</p>
+              <p className="text-[#8c8a80] text-sm text-center py-8">No activity recorded</p>
             )}
             {logs.map(log => (
-              <div key={log.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-900/50 transition-all">
-                <div className="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+              <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-[#faf9f6] transition-all">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm text-slate-300">
-                    <span className="font-medium text-slate-100">{log.user?.name}</span>{' '}
-                    <span className="text-amber-400 font-medium">{log.action}</span>{' '}
-                    <span className="text-slate-400">{log.entity}</span>
-                    {log.details && <span className="text-slate-500"> — {log.details}</span>}
+                  <div className="text-sm text-[#57564f]">
+                    <span className="font-medium text-[#1c1b18]">{log.user?.name}</span>{' '}
+                    <span className="text-emerald-700 font-medium">{log.action}</span>{' '}
+                    <span className="text-[#8c8a80]">{log.entity}</span>
+                    {log.details && <span className="text-[#a8a69b]"> — {log.details}</span>}
                   </div>
-                  <div className="text-xs text-slate-500 mt-0.5">{formatDateTime(log.createdAt)}</div>
+                  <div className="text-xs text-[#a8a69b] mt-0.5">{formatDateTime(log.createdAt)}</div>
                 </div>
               </div>
             ))}

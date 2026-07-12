@@ -27,7 +27,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-const COLORS = ['#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6']
+const COLORS = ['#059669', '#0d9488', '#d97706', '#7c6f9f', '#e11d48', '#57564f', '#14b8a6', '#65a30d']
 
 interface StatsData {
   stats: {
@@ -68,7 +68,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-slate-400 animate-pulse">Loading dashboard...</div>
+        <div className="text-[#8c8a80] animate-pulse">Loading dashboard...</div>
       </div>
     )
   }
@@ -76,10 +76,10 @@ export default function DashboardPage() {
   const stats = data?.stats
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 af-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-slate-100">Dashboard</h1>
-        <p className="text-slate-400 mt-1">Asset & resource overview</p>
+        <h1 className="text-[26px] font-semibold text-[#1c1b18] tracking-tight">Dashboard</h1>
+        <p className="text-[#8c8a80] text-[14px] mt-1">Asset & resource overview</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                 ))}
               </Pie>
               <Tooltip
-                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f1f5f9' }}
+                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e9e7e1', borderRadius: '12px', color: '#1c1b18', boxShadow: '0 8px 24px rgba(28,27,24,0.10)', fontSize: '12px' }}
               />
               <Legend />
             </PieChart>
@@ -168,13 +168,13 @@ export default function DashboardPage() {
         <Card title="Assets by Status">
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={data?.charts.byStatus} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-              <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#eceae4" />
+              <XAxis dataKey="name" tick={{ fill: '#8c8a80', fontSize: 11 }} />
+              <YAxis tick={{ fill: '#8c8a80', fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f1f5f9' }}
+                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e9e7e1', borderRadius: '12px', color: '#1c1b18', boxShadow: '0 8px 24px rgba(28,27,24,0.10)', fontSize: '12px' }}
               />
-              <Bar dataKey="value" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="value" fill="#059669" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
@@ -183,19 +183,19 @@ export default function DashboardPage() {
       <Card title="Recent Activity">
         <div className="space-y-3">
           {data?.recentActivity.length === 0 && (
-            <p className="text-slate-400 text-sm text-center py-8">No recent activity</p>
+            <p className="text-[#8c8a80] text-sm text-center py-8">No recent activity</p>
           )}
           {data?.recentActivity.map((log) => (
-            <div key={log.id} className="flex items-start gap-3 p-3 rounded-lg bg-slate-900/50">
-              <div className="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+            <div key={log.id} className="flex items-start gap-3 p-3 rounded-lg bg-[#faf9f6]">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-slate-300">
-                  <span className="font-medium text-slate-100">{log.user?.name}</span>{' '}
-                  <span className="text-amber-400">{log.action}</span>{' '}
+                <div className="text-sm text-[#57564f]">
+                  <span className="font-medium text-[#1c1b18]">{log.user?.name}</span>{' '}
+                  <span className="text-emerald-700">{log.action}</span>{' '}
                   {log.entity}
-                  {log.details && <span className="text-slate-400"> — {log.details}</span>}
+                  {log.details && <span className="text-[#8c8a80]"> — {log.details}</span>}
                 </div>
-                <div className="text-xs text-slate-500 mt-0.5">{formatDateTime(log.createdAt)}</div>
+                <div className="text-xs text-[#a8a69b] mt-0.5">{formatDateTime(log.createdAt)}</div>
               </div>
             </div>
           ))}

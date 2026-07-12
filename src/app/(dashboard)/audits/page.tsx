@@ -68,19 +68,19 @@ export default function AuditsPage() {
     fetchData()
   }
 
-  const inputCls = 'w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50'
-  const labelCls = 'block text-sm font-medium text-slate-300 mb-1.5'
+  const inputCls = 'w-full bg-white border border-[#e0ded7] text-[#1c1b18] placeholder-[#a8a69b] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20'
+  const labelCls = 'block text-sm font-medium text-[#57564f] mb-1.5'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 af-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Audit Cycles</h1>
-          <p className="text-slate-400 mt-1">Physical verification and compliance audits</p>
+          <h1 className="text-[26px] font-semibold text-[#1c1b18] tracking-tight">Audit Cycles</h1>
+          <p className="text-[#8c8a80] mt-1">Physical verification and compliance audits</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2 rounded-lg text-sm transition-all shadow-lg shadow-amber-500/20"
+          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all shadow-xs"
         >
           <Plus className="h-4 w-4" />
           New Audit Cycle
@@ -89,45 +89,45 @@ export default function AuditsPage() {
 
       <div className="grid grid-cols-1 gap-4">
         {loading ? (
-          <div className="flex items-center justify-center h-48 text-slate-400 animate-pulse bg-slate-800 rounded-xl border border-slate-700/50">Loading...</div>
+          <div className="flex items-center justify-center h-48 text-[#8c8a80] animate-pulse bg-white rounded-2xl border border-[#e9e7e1] shadow-soft">Loading...</div>
         ) : audits.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 gap-3 bg-slate-800 rounded-xl border border-slate-700/50">
-            <ClipboardList className="h-12 w-12 text-slate-600" />
-            <p className="text-slate-400">No audit cycles created</p>
+          <div className="flex flex-col items-center justify-center h-48 gap-3 bg-white rounded-2xl border border-[#e9e7e1] shadow-soft">
+            <ClipboardList className="h-12 w-12 text-[#c0bdb2]" />
+            <p className="text-[#8c8a80]">No audit cycles created</p>
           </div>
         ) : (
           audits.map(audit => (
-            <div key={audit.id} className="bg-slate-800 border border-slate-700/50 rounded-xl p-6">
+            <div key={audit.id} className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl p-6 af-hover-lift">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-slate-100">{audit.name}</h3>
+                    <h3 className="text-lg font-semibold text-[#1c1b18]">{audit.name}</h3>
                     <Badge status={audit.status} />
                   </div>
-                  <div className="text-sm text-slate-400 mb-3">Scope: {audit.scope}</div>
+                  <div className="text-sm text-[#8c8a80] mb-3">Scope: {audit.scope}</div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">Department</div>
-                      <div className="text-slate-300">{audit.department?.name || 'All'}</div>
+                      <div className="text-[#a8a69b] text-xs uppercase tracking-wider mb-1">Department</div>
+                      <div className="text-[#57564f]">{audit.department?.name || 'All'}</div>
                     </div>
                     <div>
-                      <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">Start Date</div>
-                      <div className="text-slate-300">{formatDate(audit.startDate)}</div>
+                      <div className="text-[#a8a69b] text-xs uppercase tracking-wider mb-1">Start Date</div>
+                      <div className="text-[#57564f]">{formatDate(audit.startDate)}</div>
                     </div>
                     <div>
-                      <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">End Date</div>
-                      <div className="text-slate-300">{formatDate(audit.endDate)}</div>
+                      <div className="text-[#a8a69b] text-xs uppercase tracking-wider mb-1">End Date</div>
+                      <div className="text-[#57564f]">{formatDate(audit.endDate)}</div>
                     </div>
                     <div>
-                      <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">Items</div>
-                      <div className="text-slate-300">{audit._count.items}</div>
+                      <div className="text-[#a8a69b] text-xs uppercase tracking-wider mb-1">Items</div>
+                      <div className="text-[#57564f]">{audit._count.items}</div>
                     </div>
                   </div>
                   {audit.assignments.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <span className="text-xs text-slate-500">Auditors:</span>
+                      <span className="text-xs text-[#a8a69b]">Auditors:</span>
                       {audit.assignments.map((a, i) => (
-                        <span key={i} className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full">{a.auditor.name}</span>
+                        <span key={i} className="text-xs bg-stone-100 text-[#57564f] px-2 py-0.5 rounded-full">{a.auditor.name}</span>
                       ))}
                     </div>
                   )}
@@ -135,7 +135,7 @@ export default function AuditsPage() {
                 {audit.status !== 'CLOSED' && (
                   <button
                     onClick={() => closeAudit(audit.id)}
-                    className="flex-shrink-0 text-sm text-slate-400 hover:text-slate-100 bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg transition-all"
+                    className="flex-shrink-0 text-sm text-[#57564f] hover:text-[#1c1b18] bg-stone-100 hover:bg-[#faf9f6] px-3 py-1.5 rounded-xl transition-all"
                   >
                     Close Audit
                   </button>
@@ -147,7 +147,7 @@ export default function AuditsPage() {
       </div>
 
       <Modal open={showModal} onClose={() => setShowModal(false)} title="New Audit Cycle" size="lg">
-        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>}
+        {error && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className={labelCls}>Audit Name *</label>
@@ -178,12 +178,12 @@ export default function AuditsPage() {
           </div>
           <div>
             <label className={labelCls}>Assign Auditors</label>
-            <div className="max-h-40 overflow-y-auto space-y-2 bg-slate-900 border border-slate-700 rounded-lg p-3">
+            <div className="max-h-40 overflow-y-auto space-y-2 bg-[#faf9f6] border border-[#e0ded7] rounded-xl p-3">
               {employees.map(emp => (
                 <label key={emp.id} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="accent-amber-500"
+                    className="accent-emerald-600"
                     checked={form.auditorIds.includes(emp.id)}
                     onChange={e => setForm(p => ({
                       ...p,
@@ -192,14 +192,14 @@ export default function AuditsPage() {
                         : p.auditorIds.filter(id => id !== emp.id)
                     }))}
                   />
-                  <span className="text-sm text-slate-300">{emp.name} <span className="text-slate-500">— {emp.email}</span></span>
+                  <span className="text-sm text-[#57564f]">{emp.name} <span className="text-[#a8a69b]">— {emp.email}</span></span>
                 </label>
               ))}
             </div>
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Creating...' : 'Create Audit Cycle'}
             </button>
           </div>

@@ -78,14 +78,14 @@ export default function MaintenancePage() {
   }
 
   const priorityColors: Record<string, string> = {
-    LOW: 'text-slate-400 bg-slate-400/10',
-    MEDIUM: 'text-amber-400 bg-amber-400/10',
-    HIGH: 'text-orange-400 bg-orange-400/10',
-    CRITICAL: 'text-red-400 bg-red-400/10',
+    LOW: 'text-stone-600 bg-stone-100',
+    MEDIUM: 'text-amber-700 bg-amber-50',
+    HIGH: 'text-orange-700 bg-orange-50',
+    CRITICAL: 'text-rose-700 bg-rose-50',
   }
 
-  const inputCls = 'w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50'
-  const labelCls = 'block text-sm font-medium text-slate-300 mb-1.5'
+  const inputCls = 'w-full bg-white border border-[#e0ded7] text-[#1c1b18] rounded-xl px-3 py-2.5 text-sm placeholder-[#a8a69b] focus:outline-none focus:ring-2 focus:ring-emerald-600/20'
+  const labelCls = 'block text-sm font-medium text-[#57564f] mb-1.5'
 
   const nextStatuses: Record<string, string[]> = {
     PENDING: ['APPROVED', 'REJECTED'],
@@ -95,15 +95,15 @@ export default function MaintenancePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 af-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Maintenance Requests</h1>
-          <p className="text-slate-400 mt-1">Track and manage asset repair workflows</p>
+          <h1 className="text-[26px] font-semibold text-[#1c1b18] tracking-tight">Maintenance Requests</h1>
+          <p className="text-[#8c8a80] mt-1">Track and manage asset repair workflows</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2 rounded-lg text-sm transition-all shadow-lg shadow-amber-500/20"
+          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all shadow-xs"
         >
           <Plus className="h-4 w-4" />
           Raise Request
@@ -115,52 +115,52 @@ export default function MaintenancePage() {
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === s ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'}`}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${statusFilter === s ? 'bg-emerald-600 text-white' : 'bg-white border border-[#e6e4dd] text-[#57564f] hover:bg-[#faf9f6]'}`}
           >
             {s || 'All'}
           </button>
         ))}
       </div>
 
-      <div className="bg-slate-800 border border-slate-700/50 rounded-xl overflow-hidden">
+      <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center h-48 text-slate-400 animate-pulse">Loading...</div>
+          <div className="flex items-center justify-center h-48 text-[#8c8a80] animate-pulse">Loading...</div>
         ) : requests.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 gap-3">
-            <Wrench className="h-12 w-12 text-slate-600" />
-            <p className="text-slate-400">No maintenance requests</p>
+            <Wrench className="h-12 w-12 text-[#c0bdb2]" />
+            <p className="text-[#8c8a80]">No maintenance requests</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700">
+                <tr className="border-b border-[#eceae4]">
                   {['Asset', 'Description', 'Priority', 'Raised By', 'Date', 'Status', 'Actions'].map(h => (
-                    <th key={h} className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">{h}</th>
+                    <th key={h} className="text-left text-xs font-semibold text-[#8c8a80] uppercase tracking-wider px-4 py-3">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50">
+              <tbody className="divide-y divide-[#f0eee9]">
                 {requests.map(r => (
-                  <tr key={r.id} className="hover:bg-slate-700/30 transition-colors">
+                  <tr key={r.id} className="hover:bg-[#faf9f6] transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-100">{r.asset.name}</div>
-                      <div className="text-xs font-mono text-amber-400">{r.asset.assetTag}</div>
+                      <div className="font-medium text-[#1c1b18]">{r.asset.name}</div>
+                      <div className="text-xs font-mono text-emerald-700">{r.asset.assetTag}</div>
                     </td>
-                    <td className="px-4 py-3 text-slate-300 max-w-[200px] truncate">{r.description}</td>
+                    <td className="px-4 py-3 text-[#57564f] max-w-[200px] truncate">{r.description}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${priorityColors[r.priority]}`}>
                         {r.priority}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-300">{r.raisedBy.name}</td>
-                    <td className="px-4 py-3 text-slate-400">{formatDate(r.createdAt)}</td>
+                    <td className="px-4 py-3 text-[#57564f]">{r.raisedBy.name}</td>
+                    <td className="px-4 py-3 text-[#8c8a80]">{formatDate(r.createdAt)}</td>
                     <td className="px-4 py-3"><Badge status={r.status} /></td>
                     <td className="px-4 py-3">
                       {nextStatuses[r.status] && (
                         <button
                           onClick={() => { setUpdateModal({ open: true, id: r.id, currentStatus: r.status }); setUpdateForm({ status: nextStatuses[r.status][0], notes: '' }) }}
-                          className="text-xs text-amber-400 hover:text-amber-300 bg-amber-400/10 hover:bg-amber-400/20 px-2.5 py-1 rounded-lg transition-all"
+                          className="text-xs text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg transition-all"
                         >
                           Update
                         </button>
@@ -175,7 +175,7 @@ export default function MaintenancePage() {
       </div>
 
       <Modal open={showModal} onClose={() => setShowModal(false)} title="Raise Maintenance Request" size="md">
-        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>}
+        {error && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-sm">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className={labelCls}>Asset *</label>
@@ -195,8 +195,8 @@ export default function MaintenancePage() {
             </select>
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#57564f] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Submitting...' : 'Submit Request'}
             </button>
           </div>
@@ -216,8 +216,8 @@ export default function MaintenancePage() {
             <textarea value={updateForm.notes} onChange={e => setUpdateForm(p => ({ ...p, notes: e.target.value }))} rows={3} className={inputCls + ' resize-none'} placeholder="Update notes..." />
           </div>
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={() => setUpdateModal({ open: false, id: '', currentStatus: '' })} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+            <button type="button" onClick={() => setUpdateModal({ open: false, id: '', currentStatus: '' })} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#57564f] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Updating...' : 'Update'}
             </button>
           </div>

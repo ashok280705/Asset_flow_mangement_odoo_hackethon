@@ -81,19 +81,19 @@ export default function AllocationsPage() {
     setSubmitting(false)
   }
 
-  const inputCls = 'w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50'
-  const labelCls = 'block text-sm font-medium text-slate-300 mb-1.5'
+  const inputCls = 'w-full bg-white border border-[#e0ded7] text-[#1c1b18] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-500'
+  const labelCls = 'block text-sm font-medium text-[#57564f] mb-1.5'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 af-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Allocations</h1>
-          <p className="text-slate-400 mt-1">Track asset assignments to employees</p>
+          <h1 className="text-[26px] font-semibold text-[#1c1b18] tracking-tight">Allocations</h1>
+          <p className="text-[#8c8a80] text-[14px] mt-1">Track asset assignments to employees</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2 rounded-lg text-sm transition-all shadow-lg shadow-amber-500/20"
+          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all shadow-xs"
         >
           <Plus className="h-4 w-4" />
           New Allocation
@@ -105,49 +105,49 @@ export default function AllocationsPage() {
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === s ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'}`}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${statusFilter === s ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'text-[#8c8a80] hover:text-[#1c1b18] hover:bg-[#faf9f6]'}`}
           >
             {s || 'All'}
           </button>
         ))}
       </div>
 
-      <div className="bg-slate-800 border border-slate-700/50 rounded-xl overflow-hidden">
+      <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center h-48 text-slate-400 animate-pulse">Loading...</div>
+          <div className="flex items-center justify-center h-48 text-[#8c8a80] animate-pulse">Loading...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700">
+                <tr className="bg-[#faf9f6] border-b border-[#eceae4]">
                   {['Asset', 'Assigned To', 'Department', 'Allocated On', 'Expected Return', 'Condition', 'Status', 'Actions'].map(h => (
-                    <th key={h} className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">{h}</th>
+                    <th key={h} className="text-left text-[11px] font-semibold text-[#8c8a80] uppercase tracking-wider px-4 py-3">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50">
+              <tbody className="divide-y divide-[#f0eee9]">
                 {allocations.length === 0 ? (
-                  <tr><td colSpan={8} className="text-center text-slate-400 py-12">No allocations found</td></tr>
+                  <tr><td colSpan={8} className="text-center text-[#8c8a80] py-12">No allocations found</td></tr>
                 ) : allocations.map(a => (
-                  <tr key={a.id} className="hover:bg-slate-700/30 transition-colors">
+                  <tr key={a.id} className="hover:bg-[#faf9f6] transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-100">{a.asset.name}</div>
-                      <div className="text-xs font-mono text-amber-400">{a.asset.assetTag}</div>
+                      <div className="font-medium text-[#1c1b18]">{a.asset.name}</div>
+                      <div className="text-xs font-mono text-emerald-700">{a.asset.assetTag}</div>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="text-slate-100">{a.user.name}</div>
-                      <div className="text-xs text-slate-400">{a.user.email}</div>
+                      <div className="text-[#1c1b18]">{a.user.name}</div>
+                      <div className="text-xs text-[#8c8a80]">{a.user.email}</div>
                     </td>
-                    <td className="px-4 py-3 text-slate-300">{a.user.department?.name || '—'}</td>
-                    <td className="px-4 py-3 text-slate-400">{formatDate(a.allocatedAt)}</td>
-                    <td className="px-4 py-3 text-slate-400">{a.expectedReturn ? formatDate(a.expectedReturn) : '—'}</td>
+                    <td className="px-4 py-3 text-[#57564f]">{a.user.department?.name || '—'}</td>
+                    <td className="px-4 py-3 text-[#8c8a80]">{formatDate(a.allocatedAt)}</td>
+                    <td className="px-4 py-3 text-[#8c8a80]">{a.expectedReturn ? formatDate(a.expectedReturn) : '—'}</td>
                     <td className="px-4 py-3"><Badge status={a.conditionOut} /></td>
                     <td className="px-4 py-3"><Badge status={a.status} /></td>
                     <td className="px-4 py-3">
                       {a.status === 'ACTIVE' && (
                         <button
                           onClick={() => setReturnModal({ open: true, id: a.id })}
-                          className="inline-flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/20 px-2.5 py-1 rounded-lg transition-all"
+                          className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-xl transition-all"
                         >
                           <RotateCcw className="h-3 w-3" />
                           Return
@@ -163,7 +163,7 @@ export default function AllocationsPage() {
       </div>
 
       <Modal open={showModal} onClose={() => setShowModal(false)} title="New Allocation" size="md">
-        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>}
+        {error && <div className="mb-4 p-3 bg-rose-50 border border-[#eceae4] rounded-xl text-rose-700 text-sm">{error}</div>}
         <form onSubmit={handleAllocate} className="space-y-4">
           <div>
             <label className={labelCls}>Asset *</label>
@@ -190,8 +190,8 @@ export default function AllocationsPage() {
             </select>
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg transition-colors">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50 transition-all">
+            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl transition-colors">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50 transition-all">
               {submitting ? 'Allocating...' : 'Allocate Asset'}
             </button>
           </div>
@@ -211,8 +211,8 @@ export default function AllocationsPage() {
             <textarea value={returnForm.returnNotes} onChange={e => setReturnForm(p => ({ ...p, returnNotes: e.target.value }))} rows={3} className={inputCls + ' resize-none'} placeholder="Any observations..." />
           </div>
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={() => setReturnModal({ open: false, id: '' })} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+            <button type="button" onClick={() => setReturnModal({ open: false, id: '' })} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Processing...' : 'Confirm Return'}
             </button>
           </div>

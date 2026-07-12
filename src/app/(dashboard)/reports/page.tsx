@@ -6,7 +6,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
 
-const COLORS = ['#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316']
+const COLORS = ['#059669', '#0d9488', '#d97706', '#7c6f9f', '#e11d48', '#57564f', '#14b8a6', '#65a30d']
 
 interface ReportData {
   assetsByStatus: { name: string; value: number }[]
@@ -27,17 +27,17 @@ export default function ReportsPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const tooltipStyle = { backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f1f5f9' }
+  const tooltipStyle = { backgroundColor: '#ffffff', border: '1px solid #e9e7e1', borderRadius: '12px', color: '#1c1b18', boxShadow: '0 8px 24px rgba(28,27,24,0.10)', fontSize: '12px' }
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64 text-slate-400 animate-pulse">Loading reports...</div>
+    return <div className="flex items-center justify-center h-64 text-[#8c8a80] animate-pulse">Loading reports...</div>
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 af-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-slate-100">Analytics &amp; Reports</h1>
-        <p className="text-slate-400 mt-1">Comprehensive asset management insights</p>
+        <h1 className="text-[26px] font-semibold text-[#1c1b18] tracking-tight">Analytics &amp; Reports</h1>
+        <p className="text-[#8c8a80] text-[14px] mt-1">Comprehensive asset management insights</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -56,11 +56,11 @@ export default function ReportsPage() {
         <Card title="Assets by Department">
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={data?.assetsByDept} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-              <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#eceae4" />
+              <XAxis dataKey="name" tick={{ fill: '#8c8a80', fontSize: 11 }} />
+              <YAxis tick={{ fill: '#8c8a80', fontSize: 11 }} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="value" fill="#059669" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
@@ -68,14 +68,14 @@ export default function ReportsPage() {
         <Card title="Assets by Category">
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={data?.assetsByCategory} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-              <YAxis yAxisId="left" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#eceae4" />
+              <XAxis dataKey="name" tick={{ fill: '#8c8a80', fontSize: 11 }} />
+              <YAxis yAxisId="left" tick={{ fill: '#8c8a80', fontSize: 11 }} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fill: '#8c8a80', fontSize: 11 }} />
               <Tooltip contentStyle={tooltipStyle} />
               <Legend />
-              <Bar yAxisId="left" dataKey="count" name="Count" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-              <Bar yAxisId="right" dataKey="cost" name="Total Cost (&#8377;)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar yAxisId="left" dataKey="count" name="Count" fill="#059669" radius={[4, 4, 0, 0]} />
+              <Bar yAxisId="right" dataKey="cost" name="Total Cost (&#8377;)" fill="#0d9488" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
@@ -84,7 +84,7 @@ export default function ReportsPage() {
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>
               <Pie data={data?.maintenanceTrend} cx="50%" cy="50%" outerRadius={100} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
-                {data?.maintenanceTrend.map((_, i) => <Cell key={i} fill={['#64748b', '#f59e0b', '#f97316', '#ef4444'][i % 4]} />)}
+                {data?.maintenanceTrend.map((_, i) => <Cell key={i} fill={['#a8a69b', '#d97706', '#ea580c', '#e11d48'][i % 4]} />)}
               </Pie>
               <Tooltip contentStyle={tooltipStyle} />
               <Legend />
@@ -96,11 +96,11 @@ export default function ReportsPage() {
       <Card title="Allocation Status Breakdown">
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={data?.allocationTrend} layout="vertical" margin={{ top: 5, right: 20, left: 80, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-            <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-            <YAxis dataKey="name" type="category" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#eceae4" />
+            <XAxis type="number" tick={{ fill: '#8c8a80', fontSize: 11 }} />
+            <YAxis dataKey="name" type="category" tick={{ fill: '#8c8a80', fontSize: 11 }} />
             <Tooltip contentStyle={tooltipStyle} />
-            <Bar dataKey="value" fill="#f59e0b" radius={[0, 4, 4, 0]} />
+            <Bar dataKey="value" fill="#059669" radius={[0, 4, 4, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </Card>

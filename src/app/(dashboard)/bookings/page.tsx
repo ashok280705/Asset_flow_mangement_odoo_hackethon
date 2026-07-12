@@ -69,19 +69,19 @@ export default function BookingsPage() {
     fetchData()
   }
 
-  const inputCls = 'w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50'
-  const labelCls = 'block text-sm font-medium text-slate-300 mb-1.5'
+  const inputCls = 'w-full bg-white border border-[#e0ded7] text-[#1c1b18] rounded-xl px-3 py-2.5 text-sm placeholder-[#a8a69b] focus:outline-none focus:ring-2 focus:ring-emerald-600/20'
+  const labelCls = 'block text-sm font-medium text-[#57564f] mb-1.5'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 af-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Resource Bookings</h1>
-          <p className="text-slate-400 mt-1">Schedule and manage resource reservations</p>
+          <h1 className="text-[26px] font-semibold text-[#1c1b18] tracking-tight">Resource Bookings</h1>
+          <p className="text-[#8c8a80] mt-1">Schedule and manage resource reservations</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-4 py-2 rounded-lg text-sm transition-all shadow-lg shadow-amber-500/20"
+          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all shadow-xs"
         >
           <Plus className="h-4 w-4" />
           New Booking
@@ -93,51 +93,51 @@ export default function BookingsPage() {
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === s ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'}`}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${statusFilter === s ? 'bg-emerald-600 text-white' : 'bg-white border border-[#e6e4dd] text-[#57564f] hover:bg-[#faf9f6]'}`}
           >
             {s || 'All'}
           </button>
         ))}
       </div>
 
-      <div className="bg-slate-800 border border-slate-700/50 rounded-xl overflow-hidden">
+      <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center h-48 text-slate-400 animate-pulse">Loading...</div>
+          <div className="flex items-center justify-center h-48 text-[#8c8a80] animate-pulse">Loading...</div>
         ) : bookings.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 gap-3">
-            <Calendar className="h-12 w-12 text-slate-600" />
-            <p className="text-slate-400">No bookings found</p>
+            <Calendar className="h-12 w-12 text-[#c0bdb2]" />
+            <p className="text-[#8c8a80]">No bookings found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700">
+                <tr className="border-b border-[#eceae4]">
                   {['Asset', 'Booked By', 'Start Time', 'End Time', 'Purpose', 'Status', 'Actions'].map(h => (
-                    <th key={h} className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">{h}</th>
+                    <th key={h} className="text-left text-xs font-semibold text-[#8c8a80] uppercase tracking-wider px-4 py-3">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50">
+              <tbody className="divide-y divide-[#f0eee9]">
                 {bookings.map(b => (
-                  <tr key={b.id} className="hover:bg-slate-700/30 transition-colors">
+                  <tr key={b.id} className="hover:bg-[#faf9f6] transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-100">{b.asset.name}</div>
-                      <div className="text-xs font-mono text-amber-400">{b.asset.assetTag}</div>
+                      <div className="font-medium text-[#1c1b18]">{b.asset.name}</div>
+                      <div className="text-xs font-mono text-emerald-700">{b.asset.assetTag}</div>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="text-slate-100">{b.user.name}</div>
-                      <div className="text-xs text-slate-400">{b.user.email}</div>
+                      <div className="text-[#1c1b18]">{b.user.name}</div>
+                      <div className="text-xs text-[#8c8a80]">{b.user.email}</div>
                     </td>
-                    <td className="px-4 py-3 text-slate-300">{formatDateTime(b.startTime)}</td>
-                    <td className="px-4 py-3 text-slate-300">{formatDateTime(b.endTime)}</td>
-                    <td className="px-4 py-3 text-slate-400">{b.purpose || '—'}</td>
+                    <td className="px-4 py-3 text-[#57564f]">{formatDateTime(b.startTime)}</td>
+                    <td className="px-4 py-3 text-[#57564f]">{formatDateTime(b.endTime)}</td>
+                    <td className="px-4 py-3 text-[#8c8a80]">{b.purpose || '—'}</td>
                     <td className="px-4 py-3"><Badge status={b.status} /></td>
                     <td className="px-4 py-3">
                       {b.status === 'UPCOMING' && (
                         <button
                           onClick={() => cancelBooking(b.id)}
-                          className="text-xs text-red-400 hover:text-red-300 bg-red-400/10 hover:bg-red-400/20 px-2.5 py-1 rounded-lg transition-all"
+                          className="text-xs text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition-all"
                         >
                           Cancel
                         </button>
@@ -152,7 +152,7 @@ export default function BookingsPage() {
       </div>
 
       <Modal open={showModal} onClose={() => setShowModal(false)} title="New Booking" size="md">
-        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>}
+        {error && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-sm">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className={labelCls}>Bookable Asset *</label>
@@ -176,8 +176,8 @@ export default function BookingsPage() {
             <input value={form.purpose} onChange={e => setForm(p => ({ ...p, purpose: e.target.value }))} placeholder="Reason for booking..." className={inputCls} />
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg disabled:opacity-50">
+            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#57564f] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Booking...' : 'Book Resource'}
             </button>
           </div>
