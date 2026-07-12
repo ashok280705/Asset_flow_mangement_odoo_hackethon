@@ -30,6 +30,21 @@ export default function SetupPage() {
 
   const [deptEdit, setDeptEdit] = useState<{ open: boolean; id: string; name: string; code: string; parentId: string; headId: string; status: string }>({ open: false, id: '', name: '', code: '', parentId: '', headId: '', status: 'ACTIVE' })
   const [catEdit, setCatEdit] = useState<{ open: boolean; id: string; name: string; description: string; warrantyPeriod: string }>({ open: false, id: '', name: '', description: '', warrantyPeriod: '' })
+  const [empModal, setEmpModal] = useState(false)
+  const [empForm, setEmpForm] = useState({ name: '', email: '', password: '', departmentId: '', role: 'EMPLOYEE' })
+
+  async function createEmployee(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true); setError('')
+    const res = await fetch('/api/employees', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(empForm),
+    })
+    const data = await res.json()
+    if (!res.ok) { setError(data.error); setSubmitting(false); return }
+    setEmpModal(false)
+    setEmpForm({ name: '', email: '', password: '', departmentId: '', role: 'EMPLOYEE' })
+    fetchAll(); setSubmitting(false)
+  }
 
   async function saveDeptEdit(e: React.FormEvent) {
     e.preventDefault()
@@ -189,6 +204,9 @@ export default function SetupPage() {
                     </div>
                     <Badge status={d.status} />
                   </div>
+                  <div className="text-[12px] text-[#8c8a80] mb-2">
+                    Head: <span className="text-[#57564f] font-medium">{employees.find(e => e.id === d.headId)?.name || 'Unassigned'}</span>
+                  </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-4 text-sm text-[#8c8a80]">
                       <span>{d._count.users} employees</span>
@@ -245,7 +263,17 @@ export default function SetupPage() {
       )}
 
       {tab === 'employees' && (
-        <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl overflow-hidden">
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={() => { setEmpModal(true); setError('') }}
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all shadow-xs"
+            >
+              <Plus className="h-4 w-4" />
+              Add Employee
+            </button>
+          </div>
+          <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -296,6 +324,7 @@ export default function SetupPage() {
                 ))}
               </tbody>
             </table>
+          </div>
           </div>
         </div>
       )}
@@ -432,6 +461,46 @@ export default function SetupPage() {
             <button type="button" onClick={() => setCatEdit(p => ({ ...p, open: false }))} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
             <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Add Employee */}
+      <Modal open={empModal} onClose={() => setEmpModal(false)} title="Add Employee" size="sm">
+        {error && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">{error}</div>}
+        <form onSubmit={createEmployee} className="space-y-4">
+          <div>
+            <label className={labelCls}>Full Name *</label>
+            <input value={empForm.name} onChange={e => setEmpForm(p => ({ ...p, name: e.target.value }))} required placeholder="e.g. Anita Desai" className={inputCls} />
+          </div>
+          <div>
+            <label className={labelCls}>Email *</label>
+            <input type="email" value={empForm.email} onChange={e => setEmpForm(p => ({ ...p, email: e.target.value }))} required placeholder="anita@company.com" className={inputCls} />
+          </div>
+          <div>
+            <label className={labelCls}>Temporary Password *</label>
+            <input type="text" value={empForm.password} onChange={e => setEmpForm(p => ({ ...p, password: e.target.value }))} required minLength={6} placeholder="At least 6 characters" className={inputCls} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelCls}>Department</label>
+              <select value={empForm.departmentId} onChange={e => setEmpForm(p => ({ ...p, departmentId: e.target.value }))} className={inputCls}>
+                <option value="">No department</option>
+                {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>Role</label>
+              <select value={empForm.role} onChange={e => setEmpForm(p => ({ ...p, role: e.target.value }))} className={inputCls}>
+                {['EMPLOYEE', 'DEPARTMENT_HEAD', 'ASSET_MANAGER', 'ADMIN'].map(r => <option key={r} value={r}>{r.replace(/_/g, ' ')}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => setEmpModal(false)} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
+              {submitting ? 'Adding...' : 'Add Employee'}
             </button>
           </div>
         </form>
