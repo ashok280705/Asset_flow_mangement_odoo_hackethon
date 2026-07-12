@@ -1,6 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/Card'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { SkeletonWidget } from '@/components/ui/Skeleton'
+import { usePermissions } from '@/components/SessionProvider'
+import { Lock } from 'lucide-react'
 import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -17,20 +21,46 @@ interface ReportData {
 }
 
 export default function ReportsPage() {
+  const { isApprover } = usePermissions()
   const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!isApprover) { setLoading(false); return }
     fetch('/api/reports/assets')
       .then(r => r.json())
       .then(setData)
       .finally(() => setLoading(false))
-  }, [])
+  }, [isApprover])
 
   const tooltipStyle = { backgroundColor: '#ffffff', border: '1px solid #e9e7e1', borderRadius: '12px', color: '#1c1b18', boxShadow: '0 8px 24px rgba(28,27,24,0.10)', fontSize: '12px' }
 
+  if (!isApprover) {
+    return (
+      <div className="af-fade-in">
+        <div className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl">
+          <EmptyState
+            icon={Lock}
+            title="Manager access required"
+            description="Analytics and reports are available to asset managers, department heads and administrators."
+          />
+        </div>
+      </div>
+    )
+  }
+
   if (loading) {
-    return <div className="flex items-center justify-center h-64 text-[#8c8a80] animate-pulse">Loading reports...</div>
+    return (
+      <div className="space-y-8 af-fade-in">
+        <div className="space-y-2">
+          <div className="af-skeleton h-7 w-56" />
+          <div className="af-skeleton h-4 w-72" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => <SkeletonWidget key={i} />)}
+        </div>
+      </div>
+    )
   }
 
   return (

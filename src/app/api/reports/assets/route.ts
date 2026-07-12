@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
+import { isApprover } from '@/lib/rbac'
 
 export async function GET() {
   const user = await getSession()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // Reports & analytics are a management surface — not for individual employees.
+  if (!isApprover(user)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const [
     assetsByStatus,
