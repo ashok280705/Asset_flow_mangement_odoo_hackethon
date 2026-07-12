@@ -6,9 +6,9 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { usePermissions } from '@/components/SessionProvider'
 import { Building2, Tag, Users, Plus, Lock } from 'lucide-react'
 
-interface Department { id: string; name: string; code: string; status: string; _count: { users: number; assets: number } }
+interface Department { id: string; name: string; code: string; status: string; parentId?: string | null; headId?: string | null; _count: { users: number; assets: number } }
 interface Category { id: string; name: string; description?: string; warrantyPeriod?: number; _count: { assets: number } }
-interface Employee { id: string; name: string; email: string; role: string; status: string; department?: { name: string } }
+interface Employee { id: string; name: string; email: string; role: string; status: string; departmentId?: string | null; department?: { name: string } }
 
 export default function SetupPage() {
   const { isAdmin } = usePermissions()
@@ -27,6 +27,40 @@ export default function SetupPage() {
   const [newRole, setNewRole] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+
+  const [deptEdit, setDeptEdit] = useState<{ open: boolean; id: string; name: string; code: string; parentId: string; headId: string; status: string }>({ open: false, id: '', name: '', code: '', parentId: '', headId: '', status: 'ACTIVE' })
+  const [catEdit, setCatEdit] = useState<{ open: boolean; id: string; name: string; description: string; warrantyPeriod: string }>({ open: false, id: '', name: '', description: '', warrantyPeriod: '' })
+
+  async function saveDeptEdit(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true); setError('')
+    const res = await fetch(`/api/departments/${deptEdit.id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: deptEdit.name, code: deptEdit.code, parentId: deptEdit.parentId, headId: deptEdit.headId, status: deptEdit.status }),
+    })
+    const data = await res.json()
+    if (!res.ok) { setError(data.error); setSubmitting(false); return }
+    setDeptEdit(p => ({ ...p, open: false })); fetchAll(); setSubmitting(false)
+  }
+
+  async function saveCatEdit(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true); setError('')
+    const res = await fetch(`/api/categories/${catEdit.id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: catEdit.name, description: catEdit.description, warrantyPeriod: catEdit.warrantyPeriod || undefined }),
+    })
+    const data = await res.json()
+    if (!res.ok) { setError(data.error); setSubmitting(false); return }
+    setCatEdit(p => ({ ...p, open: false })); fetchAll(); setSubmitting(false)
+  }
+
+  async function updateEmployee(id: string, patch: { status?: string; departmentId?: string }) {
+    await fetch(`/api/employees/${id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch),
+    })
+    fetchAll()
+  }
 
   async function fetchAll() {
     setLoading(true)
@@ -155,9 +189,17 @@ export default function SetupPage() {
                     </div>
                     <Badge status={d.status} />
                   </div>
-                  <div className="flex gap-4 text-sm text-[#8c8a80]">
-                    <span>{d._count.users} employees</span>
-                    <span>{d._count.assets} assets</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-4 text-sm text-[#8c8a80]">
+                      <span>{d._count.users} employees</span>
+                      <span>{d._count.assets} assets</span>
+                    </div>
+                    <button
+                      onClick={() => setDeptEdit({ open: true, id: d.id, name: d.name, code: d.code, parentId: d.parentId || '', headId: d.headId || '', status: d.status })}
+                      className="text-xs text-[#57564f] hover:text-[#1c1b18] bg-stone-100 hover:bg-[#faf9f6] px-2.5 py-1 rounded-lg transition-all"
+                    >
+                      Edit
+                    </button>
                   </div>
                 </div>
               ))
@@ -181,7 +223,15 @@ export default function SetupPage() {
             {loading ? <div className="col-span-3 text-center text-[#8c8a80] py-12 animate-pulse">Loading...</div> :
               categories.map(c => (
                 <div key={c.id} className="bg-white border border-[#e9e7e1] shadow-soft rounded-2xl p-5 af-hover-lift">
-                  <div className="font-semibold text-[#1c1b18] mb-1">{c.name}</div>
+                  <div className="flex items-start justify-between mb-1">
+                    <div className="font-semibold text-[#1c1b18]">{c.name}</div>
+                    <button
+                      onClick={() => setCatEdit({ open: true, id: c.id, name: c.name, description: c.description || '', warrantyPeriod: c.warrantyPeriod ? String(c.warrantyPeriod) : '' })}
+                      className="text-xs text-[#57564f] hover:text-[#1c1b18] bg-stone-100 hover:bg-[#faf9f6] px-2.5 py-1 rounded-lg transition-all"
+                    >
+                      Edit
+                    </button>
+                  </div>
                   {c.description && <div className="text-sm text-[#8c8a80] mb-2">{c.description}</div>}
                   <div className="flex gap-4 text-sm text-[#8c8a80]">
                     <span>{c._count.assets} assets</span>
@@ -212,18 +262,35 @@ export default function SetupPage() {
                   <tr key={emp.id} className="hover:bg-[#faf9f6] transition-colors">
                     <td className="px-4 py-3 font-medium text-[#1c1b18]">{emp.name}</td>
                     <td className="px-4 py-3 text-[#8c8a80]">{emp.email}</td>
-                    <td className="px-4 py-3 text-[#57564f]">{emp.department?.name || '—'}</td>
+                    <td className="px-4 py-3">
+                      <select
+                        value={emp.departmentId || ''}
+                        onChange={e => updateEmployee(emp.id, { departmentId: e.target.value })}
+                        className="text-xs bg-white border border-[#e0ded7] rounded-lg px-2 py-1 text-[#57564f] focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
+                      >
+                        <option value="">No department</option>
+                        {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                      </select>
+                    </td>
                     <td className="px-4 py-3">
                       <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">{emp.role.replace(/_/g, ' ')}</span>
                     </td>
                     <td className="px-4 py-3"><Badge status={emp.status} /></td>
                     <td className="px-4 py-3">
-                      <button
-                        onClick={() => { setRoleModal({ open: true, id: emp.id, name: emp.name, role: emp.role }); setNewRole(emp.role) }}
-                        className="text-xs text-[#57564f] hover:text-[#1c1b18] bg-stone-100 hover:bg-[#faf9f6] px-2.5 py-1 rounded-xl transition-all"
-                      >
-                        Change Role
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => { setRoleModal({ open: true, id: emp.id, name: emp.name, role: emp.role }); setNewRole(emp.role) }}
+                          className="text-xs text-[#57564f] hover:text-[#1c1b18] bg-stone-100 hover:bg-[#faf9f6] px-2.5 py-1 rounded-lg transition-all"
+                        >
+                          Change Role
+                        </button>
+                        <button
+                          onClick={() => updateEmployee(emp.id, { status: emp.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' })}
+                          className={`text-xs px-2.5 py-1 rounded-lg transition-all ${emp.status === 'ACTIVE' ? 'text-rose-600 bg-rose-50 hover:bg-rose-100' : 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100'}`}
+                        >
+                          {emp.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -298,6 +365,73 @@ export default function SetupPage() {
             <button type="button" onClick={() => setRoleModal({ open: false, id: '', name: '', role: '' })} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
             <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
               {submitting ? 'Updating...' : 'Update Role'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Department */}
+      <Modal open={deptEdit.open} onClose={() => setDeptEdit(p => ({ ...p, open: false }))} title="Edit Department" size="sm">
+        {error && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">{error}</div>}
+        <form onSubmit={saveDeptEdit} className="space-y-4">
+          <div>
+            <label className={labelCls}>Department Name *</label>
+            <input value={deptEdit.name} onChange={e => setDeptEdit(p => ({ ...p, name: e.target.value }))} required className={inputCls} />
+          </div>
+          <div>
+            <label className={labelCls}>Code *</label>
+            <input value={deptEdit.code} onChange={e => setDeptEdit(p => ({ ...p, code: e.target.value.toUpperCase() }))} required className={inputCls} />
+          </div>
+          <div>
+            <label className={labelCls}>Department Head</label>
+            <select value={deptEdit.headId} onChange={e => setDeptEdit(p => ({ ...p, headId: e.target.value }))} className={inputCls}>
+              <option value="">Unassigned</option>
+              {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className={labelCls}>Parent Department</label>
+            <select value={deptEdit.parentId} onChange={e => setDeptEdit(p => ({ ...p, parentId: e.target.value }))} className={inputCls}>
+              <option value="">None (Top level)</option>
+              {departments.filter(d => d.id !== deptEdit.id).map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className={labelCls}>Status</label>
+            <select value={deptEdit.status} onChange={e => setDeptEdit(p => ({ ...p, status: e.target.value }))} className={inputCls}>
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+            </select>
+          </div>
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => setDeptEdit(p => ({ ...p, open: false }))} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
+              {submitting ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Category */}
+      <Modal open={catEdit.open} onClose={() => setCatEdit(p => ({ ...p, open: false }))} title="Edit Category" size="sm">
+        {error && <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">{error}</div>}
+        <form onSubmit={saveCatEdit} className="space-y-4">
+          <div>
+            <label className={labelCls}>Category Name *</label>
+            <input value={catEdit.name} onChange={e => setCatEdit(p => ({ ...p, name: e.target.value }))} required className={inputCls} />
+          </div>
+          <div>
+            <label className={labelCls}>Description</label>
+            <textarea value={catEdit.description} onChange={e => setCatEdit(p => ({ ...p, description: e.target.value }))} rows={2} className={inputCls + ' resize-none'} />
+          </div>
+          <div>
+            <label className={labelCls}>Warranty Period (months)</label>
+            <input type="number" value={catEdit.warrantyPeriod} onChange={e => setCatEdit(p => ({ ...p, warrantyPeriod: e.target.value }))} className={inputCls} />
+          </div>
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => setCatEdit(p => ({ ...p, open: false }))} className="px-4 py-2 text-sm bg-stone-100 hover:bg-[#faf9f6] text-[#1c1b18] rounded-xl">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50">
+              {submitting ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>
