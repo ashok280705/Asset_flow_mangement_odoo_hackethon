@@ -1,19 +1,25 @@
 import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/auth'
 import { Sidebar } from '@/components/Sidebar'
+import { TopBar } from '@/components/TopBar'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await getSession()
   if (!user) redirect('/login')
 
+  const u = { name: user.name, email: user.email, role: user.role }
+
   return (
-    <div className="flex min-h-screen bg-slate-900">
-      <Sidebar user={{ name: user.name, email: user.email, role: user.role }} />
-      <main className="flex-1 overflow-auto">
-        <div className="p-8">
-          {children}
-        </div>
-      </main>
+    <div className="flex min-h-screen bg-[#f6f5f2]">
+      <Sidebar user={u} />
+      <div className="flex-1 min-w-0 flex flex-col">
+        <TopBar user={u} />
+        <main className="flex-1 overflow-auto">
+          <div className="px-6 lg:px-8 py-8 max-w-[1400px] mx-auto w-full af-fade-in">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   )
 }
